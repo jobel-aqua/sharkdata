@@ -1,0 +1,14 @@
+# Ignore:
+*.*~
+*.pyc
+
+# Eclipse:
+.metadata
+*/.project
+*/.pydevproject
+
+# Django project:
+proj_sharkdata/proj_sharkdata/settings.py
+proj_sharkdata/proj_sharkdata/wsgi.py
+
+

@@ -1,0 +1,91 @@
+{% extends "sharkdata_base.html" %}
+
+{% block title %}SHARKdata - Species observations{% endblock %}
+
+{% block header %}Species observations{% endblock %}
+
+{% block content %}
+
+        {% if error_message %}
+        <div class="alert alert-danger">
+            <strong><i>{{ error_message }}</i></strong>
+        </div>
+        {% endif %}
+
+        <p>
+            <a class="btn btn-sm btn-default" href="/speciesobs/update">Update</a>
+            <a class="btn btn-sm btn-default" href="/speciesobs/load">Reload</a>
+            <a class="btn btn-sm btn-default" href="/speciesobs/clean_up">Clean up</a>
+        </p>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="panel-title">Species observations filter</h2>
+            </div>
+            <div class="panel-body">
+                <form class="sharkdata-form" method="post">
+                    {{ form.as_p }}
+                    <p class="sharkdata-form-actions">
+                        <button class="btn btn-sm btn-default" type="submit" name="confirm" value="get_data">View data</button>
+                        <button class="btn btn-sm btn-default" type="submit" name="confirm" value="view_url">View example URLs</button>
+                        <a class="btn btn-sm btn-default" href="/speciesobs">Clear</a>
+                    </p>
+                </form>
+            </div>
+        </div>
+
+        {% if data_rows %}
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="panel-title">Species observations</h2>
+            </div>
+
+            <div class="table-container">
+                <table class="table table-striped">
+
+                {% if data_header %}
+                <thead>
+                    <tr>
+                    {% for item in data_header %}
+                        <th>{{ item }}</th>
+                    {% endfor %}
+                    </tr>
+                </thead>
+                {% endif %}
+
+
+                {% if data_rows %}
+                <tbody>
+                {% for row in data_rows %}
+                    <tr>
+                    {% for item in row %}
+                        <td>{{ item }}</td>
+                    {% endfor %}
+                    </tr>
+                {% endfor %}
+                </tbody>
+                {% endif %}
+
+                </table>
+            </div>
+        </div>
+        {% endif %}
+
+
+        {% if url_table %}
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="panel-title">Example URLs</h2>
+            </div>
+            <div class="panel-body">
+                <ul class="list-unstyled">
+                {% for item in url_table %}
+                    <li><a href="{{ item }}">{{ item }}</a></li>
+                {% endfor %}
+                </ul>
+            </div>
+        </div>
+        {% endif %}
+
+
+{% endblock content %}

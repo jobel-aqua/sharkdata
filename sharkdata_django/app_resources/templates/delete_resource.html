@@ -1,0 +1,36 @@
+{% extends "sharkdata_base.html" %}
+
+{% block title %}SHARKdata - Delete resource{% endblock %}
+
+{% block header %}Resources{% endblock %}
+
+{% block content %}
+ 
+        {% if error_message %}
+        <div class="alert alert-danger">
+            <strong><i>{{ error_message }}</i></strong>
+        </div>
+        {% endif %}
+
+        {% if form.errors %}
+        <div class="alert alert-danger">
+            <strong>Sorry, something went wrong.</strong> Please correct the error(s) below and try to submit the form again.
+        </div>
+        {% endif %}
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="panel-title">Delete resource</h2>
+            </div>
+            <div class="panel-body">
+                <p>Are you sure you want to delete {{ resource.resource_name }} from the database?</p>
+                <form class="sharkdata-form" enctype="multipart/form-data" method="post" action="{{ resource.id }}">
+                    {{ form.as_p }}
+                    <p class="sharkdata-form-actions">
+                        <button class="btn btn-primary" type="submit">Yes</button>
+                        <a class="btn btn-default" href="/resources">Cancel</a>
+                    </p>
+                </form>
+            </div>
+        </div>
+{% endblock %}

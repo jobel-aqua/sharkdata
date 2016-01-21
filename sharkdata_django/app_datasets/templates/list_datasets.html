@@ -1,0 +1,82 @@
+{% extends "sharkdata_base.html" %}
+
+{% block title %}SHARKdata - Datasets{% endblock %}
+
+{% block header %}Datasets{% endblock %}
+
+{% block content %}
+
+        <p>
+            <a class="btn btn-sm btn-default" href="/datasets/import">Import new dataset</a>
+            <a class="btn btn-sm btn-default" href="/datasets/delete_all">Delete all</a>
+            <a class="btn btn-sm btn-default" href="/datasets/load_all">Reload all</a>
+        </p>
+
+        {% if datasets %}
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="panel-title">Available datasets</h2>
+            </div>
+
+            <div class="table-container">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Datatype</th>
+                            <th>Dataset name</th>
+                            <th>Metadata</th>
+                            <th>Data</th>
+                            <th>Version</th>
+                            <th>Dataset file name</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                    {% for dataset in datasets %}
+                        <tr>
+                            <td>{{ dataset.datatype }}</td>
+                            <td>{{ dataset.dataset_name }}</td>
+<!--                        <td><a class="btn btn-primary btn-xs" href="/datasets/{{ dataset.dataset_name }}/metadata.txt">Metadata</a></td> -->
+                            <td>
+                              <div class="btn-group">
+                                <button type="button" class="btn btn-primary btn-xs dropdown-toggle" data-toggle="dropdown">
+                                  Metadata <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu">
+                                  <li><a href="/datasets/{{ dataset.dataset_name }}/metadata.txt">as text</a></li>
+                                  <li><a href="/datasets/{{ dataset.dataset_name }}/metadata.json">as JSON</a></li>
+<!--                              <li><a href="/datasets/{{ dataset.dataset_name }}/metadata.xml">as XML</a></li> -->
+                                </ul>
+                              </div>
+                            </td>  
+                            
+<!--                        <td><a class="btn btn-primary btn-xs" href="/datasets/{{ dataset.dataset_name }}/data.txt">Data</a></td> -->
+                            <td>
+                              <div class="btn-group">
+                                <button type="button" class="btn btn-primary btn-xs dropdown-toggle" data-toggle="dropdown">
+                                  Data <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu">
+                                  <li><a href="/datasets/{{ dataset.dataset_name }}/data.txt">as text</a></li>
+                                  <li><a href="/datasets/{{ dataset.dataset_name }}/data.json">as JSON</a></li>
+                                </ul>
+                              </div>
+                            </td>  
+                            
+                            
+                            <td>{{ dataset.version }}</td>
+                            <td>{{ dataset.dataset_file_name }}</td>
+<!--                            <td><a class="btn btn-primary btn-xs" href="/datasets/delete/{{ dataset.id }}">Delete</a></td> -->
+                            <td><a class="btn btn-primary btn-xs" href="/datasets/delete/{{ dataset.id }}"><span class="glyphicon glyphicon-trash"></span></a></td>
+                        </tr>
+                    {% endfor %}
+
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+        {% endif %}
+
+{% endblock content %}

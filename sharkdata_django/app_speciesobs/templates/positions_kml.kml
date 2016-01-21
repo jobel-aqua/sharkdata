@@ -1,0 +1,14 @@
+{% extends "gis/kml/base.kml" %}
+{% block placemarks %}
+  <Folder>
+    <name> {{ kml_name }} </name>
+    <description> {{ kml_description }} </description>
+    {% for row in kml_data %}
+      <Placemark>
+        <name> {{ row.kml_name }} </name>
+        <description> {{ row.kml_description }} </description>
+          {{ row.kml_kml|safe }}
+      </Placemark>
+    {% endfor %}
+  </Folder>
+{% endblock %}

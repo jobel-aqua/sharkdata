@@ -1,0 +1,38 @@
+{% extends "sharkdata_base.html" %}
+
+{% block title %}SHARKdata - Update species observations{% endblock %}
+
+{% block header %}Species observations{% endblock %}
+
+{% block content %}
+
+        {% if error_message %}
+        <div class="alert alert-danger">
+            <strong><i>{{ error_message }}</i></strong>
+        </div>
+        {% endif %}
+
+        {% if form.errors %}
+        <div class="alert alert-danger">
+            <strong>Sorry, something went wrong.</strong> Please correct the error(s) below and try to submit the form again.
+        </div>
+        {% endif %}
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="panel-title">Update species observations</h2>
+            </div>
+            <div class="panel-body">
+                <p>Are you sure you want to extract species observations from species related information in the datasets?
+                The result will be stored both in the database and in a backup file.
+                </p>
+                <form class="sharkdata-form" enctype="multipart/form-data" method="post" action="update">
+                    {{ form.as_p }}
+                    <p class="sharkdata-form-actions">
+                        <button class="btn btn-primary" type="submit">Yes</button>
+                        <a class="btn btn-default" href="/speciesobs">Cancel</a>
+                    </p>
+                </form>
+            </div>
+        </div>
+{% endblock %}

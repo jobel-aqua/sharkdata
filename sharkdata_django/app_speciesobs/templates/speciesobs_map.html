@@ -1,0 +1,36 @@
+<html>
+<head>
+  <title>SHARKdata - OpenLayers Example
+  </title>
+  <script src="http://openlayers.org/api/OpenLayers.js"></script>
+</head>
+<body>
+
+  <div id="map"></div>
+
+  <script defer="defer" type="text/javascript">
+
+    var map = new OpenLayers.Map('map');
+
+    var wms = new OpenLayers.Layer.WMS( "OpenLayers WMS",
+		"http://vmap0.tiles.osgeo.org/wms/vmap0", 
+		{layers: 'basic'} );
+		
+    var kml_layer = new OpenLayers.Layer.Vector("KML", {
+        strategies: [new OpenLayers.Strategy.Fixed()],
+        protocol: new OpenLayers.Protocol.HTTP({
+            url: "{{ kml_link }}",
+            format: new OpenLayers.Format.KML({
+            })
+        })
+    });
+
+    kml_layer.setVisibility(true);
+
+    map.addLayers([wms, kml_layer]);
+    map.setCenter(new OpenLayers.LonLat(15.0, 55.0), 5);
+	map.addControl(new OpenLayers.Control.LayerSwitcher());
+
+  </script>
+</body>
+</html>

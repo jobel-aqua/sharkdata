@@ -1,0 +1,52 @@
+{% extends "sharkdata_base.html" %}
+
+{% block title %}SHARKdata - Resources{% endblock %}
+
+{% block header %}Resources{% endblock %}
+
+{% block content %}
+
+        <p>
+            <a class="btn btn-sm btn-default" href="/resources/import">Import new resource</a>
+            <a class="btn btn-sm btn-default" href="/resources/delete_all">Delete all</a>
+            <a class="btn btn-sm btn-default" href="/resources/load_all">Reload all</a>
+        </p>
+
+        {% if resources %}
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="panel-title">Available resources</h2>
+            </div>
+
+            <div class="table-container">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Resource type</th>
+                            <th>Resource name</th>
+                            <th>Content</th>
+                            <th>Encoding</th>
+                            <th>Resource file name</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for resource in resources %}
+                        <tr>
+                            <td>{{ resource.resource_type }}</td>
+                            <td>{{ resource.resource_name }}</td>
+                            <td><a class="btn btn-primary btn-xs" href="/resources/{{ resource.resource_name }}/content.txt">View content</a></td>
+                            <td>{{ resource.encoding }}</td>
+                            <td>{{ resource.resource_file_name }}</td>
+<!--                            <td><a class="btn btn-primary btn-xs" href="/resources/delete/{{ resource.id }}">Delete</a></td> -->
+                            <td><a class="btn btn-primary btn-xs" href="/resources/delete/{{ resource.id }}"><span class="glyphicon glyphicon-trash"></span></a></td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+        {% endif %}
+
+{% endblock content %}
