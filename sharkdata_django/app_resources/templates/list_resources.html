@@ -6,13 +6,9 @@
 
 {% block content %}
 
-        <p>
-            <a class="btn btn-sm btn-default" href="/resources/import">Import new resource</a>
-            <a class="btn btn-sm btn-default" href="/resources/delete_all">Delete all</a>
-            <a class="btn btn-sm btn-default" href="/resources/load_all">Reload all</a>
-        </p>
+		{% block standard-alerts %}
+		{% endblock standard-alerts %}
 
-        {% if resources %}
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h2 class="panel-title">Available resources</h2>
@@ -35,7 +31,7 @@
                         <tr>
                             <td>{{ resource.resource_type }}</td>
                             <td>{{ resource.resource_name }}</td>
-                            <td><a class="btn btn-primary btn-xs" href="/resources/{{ resource.resource_name }}/content.txt">View content</a></td>
+                            <td><a class="btn btn-primary btn-xs" href="/resources/{{ resource.resource_name }}/content.txt">Get content</a></td>
                             <td>{{ resource.encoding }}</td>
                             <td>{{ resource.resource_file_name }}</td>
 <!--                            <td><a class="btn btn-primary btn-xs" href="/resources/delete/{{ resource.id }}">Delete</a></td> -->
@@ -47,6 +43,5 @@
             </div>
 
         </div>
-        {% endif %}
 
 {% endblock content %}

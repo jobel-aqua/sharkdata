@@ -21,8 +21,8 @@ urlpatterns = patterns('app_speciesobs.views',
         (r'^year_info.kml', 'yearInfoKml'),
         (r'^map', 'mapOpenlayers'),
         
-        # Commands from HTML pages.
-        (r'^update$', 'updateSpeciesObs'),
-        (r'^load$', 'loadSpeciesObs'),
-        (r'^clean_up$', 'cleanUpSpeciesObs'),
+#         # Commands from HTML pages.
+#         (r'^update$', 'updateSpeciesObs'),
+#         (r'^load$', 'loadSpeciesObs'),
+#         (r'^cleanup$', 'cleanUpSpeciesObs'),
     )

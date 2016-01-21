@@ -25,7 +25,7 @@ class ResourcesUtils(object):
         self._resource_headers = None
         self._translated_headers = {}
         
-    def getHeaders(self):
+    def getResourceListHeaders(self):
         """ """
         if self._resource_headers == None:
             self._resource_headers = [
@@ -55,7 +55,7 @@ class ResourcesUtils(object):
         return translated
 
     def _getTranslateHeaders(self, resource_name = u'translate_headers', 
-                            language = u'english'):
+                             language = u'english'):
         """ """
         translate_dict = {}
         columnindex = None
@@ -83,6 +83,8 @@ class ResourcesUtils(object):
 
     def saveUploadedFileToFtp(self, uploaded_file):
         """ Note: The parameter 'uploaded_file must' be of class UploadedFile. """
+        self.clear()
+        #
         file_name = unicode(uploaded_file)
         file_path = os.path.join(self._ftp_dir_path, file_name)
         # Save by reading/writing chunks..
@@ -95,12 +97,16 @@ class ResourcesUtils(object):
 
     def deleteFileFromFtp(self, file_name):
         """ Delete resource from FTP area. """
+        self.clear()
+        #
         file_path = os.path.join(self._ftp_dir_path, file_name)
         # Delete the file.
         os.remove(file_path)
 
     def deleteAllFilesFromFtp(self):
         """ Delete all resources from FTP area. """
+        self.clear()
+        #
         for file_name in os.listdir(self._ftp_dir_path):
             file_path = os.path.join(self._ftp_dir_path, file_name)
             if os.path.isfile(file_path):
@@ -111,6 +117,7 @@ class ResourcesUtils(object):
             I multiple versions of a dataset are in the FTP area only the latest 
             will be loaded.
         """
+        self.clear()
         # Remove all db rows. 
         models.Resources.objects.all().delete()
         # Get resources from FTP archive.
@@ -119,6 +126,8 @@ class ResourcesUtils(object):
 
     def writeFileInfoToDb(self, file_name, user = u''):
         """ Extracts info from the resource file name and add to database. """
+        #
+        self.clear()
         #
         ftp_file_path = os.path.join(self._ftp_dir_path, file_name)
         # Extract info from file name.

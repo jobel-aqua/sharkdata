@@ -6,11 +6,11 @@
 
 from django import forms
 
-class ImportDatasetForm(forms.Form):
-    """ """
-    import_file = forms.FileField(label="Select a SHARK archive file")
-    user = forms.CharField(label="User")
-    password = forms.CharField(label="Password", widget=forms.PasswordInput())
+# class ImportDatasetForm(forms.Form):
+#     """ """
+#     import_file = forms.FileField(label="Select a SHARK archive file")
+#     user = forms.CharField(label="User")
+#     password = forms.CharField(label="Password", widget=forms.PasswordInput())
 
 class DeleteDatasetForm(forms.Form):
     """ """
@@ -18,15 +18,15 @@ class DeleteDatasetForm(forms.Form):
     user = forms.CharField(label="User")
     password = forms.CharField(label="Password", widget=forms.PasswordInput())
 
-class DeleteAllDatasetsForm(forms.Form):
-    """ """
-    delete_ftp = forms.BooleanField(label='Remove from FTP', required = False, initial = False)
-    user = forms.CharField(label="User")
-    password = forms.CharField(label="Password", widget=forms.PasswordInput())
-
-class LoadAllDatasetsForm(forms.Form):
-    """ """
-    update_metadata = forms.BooleanField(label='Update metadata', required = False, initial = False)
-    user = forms.CharField(label="User")
-    password = forms.CharField(label="Password", widget=forms.PasswordInput())
+# class DeleteAllDatasetsForm(forms.Form):
+#     """ """
+#     delete_ftp = forms.BooleanField(label='Remove from FTP', required = False, initial = False)
+#     user = forms.CharField(label="User")
+#     password = forms.CharField(label="Password", widget=forms.PasswordInput())
+# 
+# class LoadAllDatasetsForm(forms.Form):
+#     """ """
+#     update_metadata = forms.BooleanField(label='Update metadata', required = False, initial = False)
+#     user = forms.CharField(label="User")
+#     password = forms.CharField(label="Password", widget=forms.PasswordInput())
 

@@ -62,7 +62,8 @@ class SpeciesObs(models.Model):
                  self.longitude_dd + u'+' + \
                  self.scientific_name + u'+' + \
                  self.sample_min_depth + u'+' + \
-                 self.sample_max_depth
+                 self.sample_max_depth + u'+' + \
+                 self.sampler_type
         # Generates MD5 string of 32 hex digits.
         md5_id = u'MD5 not calculated'
         try:

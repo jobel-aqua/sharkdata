@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<eml:eml
+    packageId="---TODO---" system="http://test.sharkdata.se"
+    xmlns:eml="eml://ecoinformatics.org/eml-2.1.1"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="eml://ecoinformatics.org/eml-2.1.1 eml.xsd">
+
+  <dataset>
+    <title>Test data from http://test.sharkdata.se</title>
+    <abstract>
+      <para>FOR TEST ONLY. DATA NOT COMPLETE AND CHECKED.</para>
+    </abstract>
+    <creator>
+      <individualName> 
+        <givenName>Arnold</givenName>
+        <surName>Andreasson</surName> 
+      </individualName>
+      <electronicMailAddress>arnold.andreasson@smhi.se</electronicMailAddress>
+    </creator>
+    <pubDate>2014-10-13</pubDate>
+    <distribution>
+      <online>
+        <url>http://test.sharkdata.se/datasets/</url>
+      </online>
+    </distribution>
+    <contact>
+      <individualName> 
+        <givenName>Arnold</givenName>
+        <surName>Andreasson</surName> 
+      </individualName>
+      <electronicMailAddress>arnold.andreasson@smhi.se</electronicMailAddress>
+     </contact>
+     <publisher>
+       <organizationName>Swedish Meterological and Hydrological Institute (SMHI)</organizationName>
+     </publisher>
+  </dataset>
+</eml:eml>

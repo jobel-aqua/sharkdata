@@ -1,4 +1,4 @@
-{% extends "sharkdata_base.html" %}
+{% extends "sharkdata_form_base.html" %}
 
 {% block title %}SHARKdata - Delete dataset{% endblock %}
 
@@ -6,31 +6,20 @@
 
 {% block content %}
  
-        {% if error_message %}
-        <div class="alert alert-danger">
-            <strong><i>{{ error_message }}</i></strong>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h2 class="panel-title">Delete dataset</h2>
         </div>
-        {% endif %}
-
-        {% if form.errors %}
-        <div class="alert alert-danger">
-            <strong>Sorry, something went wrong.</strong> Please correct the error(s) below and try to submit the form again.
+        <div class="panel-body">
+            <p>Are you sure you want to delete {{ dataset.dataset_file_name }} from the database?</p>
+            <form class="sharkdata-form" enctype="multipart/form-data" method="post" action="{{ dataset.id }}">
+            	{% csrf_token %}
+                {{ form.as_p }}
+                <p class="sharkdata-form-actions">
+                    <button class="btn btn-primary" type="submit">Yes</button>
+                    <a class="btn btn-default" href="/datasets">Cancel</a>
+                </p>
+            </form>
         </div>
-        {% endif %}
-
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h2 class="panel-title">Delete dataset</h2>
-            </div>
-            <div class="panel-body">
-                <p>Are you sure you want to delete {{ dataset.dataset_file_name }} from the database?</p>
-                <form class="sharkdata-form" enctype="multipart/form-data" method="post" action="{{ dataset.id }}">
-                    {{ form.as_p }}
-                    <p class="sharkdata-form-actions">
-                        <button class="btn btn-primary" type="submit">Yes</button>
-                        <a class="btn btn-default" href="/datasets">Cancel</a>
-                    </p>
-                </form>
-            </div>
-        </div>
+    </div>
 {% endblock %}

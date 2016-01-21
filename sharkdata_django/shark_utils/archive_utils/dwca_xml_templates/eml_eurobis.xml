@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<eml:eml
+    packageId="-REPLACE_packageId-" system="http://sharkdata.se"
+    xmlns:eml="eml://ecoinformatics.org/eml-2.1.1"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="eml://ecoinformatics.org/eml-2.1.1 eml.xsd">
+
+  <dataset>
+    <title>Marine environmental data from http://sharkdata.se</title>
+    <abstract>
+      <para>These data originates from Swedish National Oceanographic Data Centre at SMHI</para>
+    </abstract>
+    <creator>
+      <electronicMailAddress>shark@smhi.se</electronicMailAddress>
+    </creator>
+    <pubDate>-REPLACE_pubDate-</pubDate>
+    <intellectualRights>
+    <para>Data are free to use. More info: http://www.smhi.se/oceanografi/oce_info_data/SODC/datapolicy_en.pdf
+    </para>
+    </intellectualRights>
+    <distribution>
+      <online>
+        <url>http://sharkdata.se/datasets</url>
+      </online>
+    </distribution>	
+    <contact>
+      <individualName> 
+        <surName>No contact surname provided</surName> 
+      </individualName>
+      <electronicMailAddress>shark@smhi.se</electronicMailAddress>
+     </contact>
+     <publisher>
+       <organizationName>Swedish Meterological and Hydrological Institute (SMHI)</organizationName>
+     </publisher>
+  </dataset>
+</eml:eml>

@@ -12,15 +12,13 @@ urlpatterns = patterns('app_resources.views',
         (r'^list.json$', 'listResourcesJson'),
         #
         (r'^table$', 'tableResources'),
-        (r'^table.txt$', 'tableResourcesText'),
-        (r'^table.json$', 'tableResourcesJson'),
+        (r'^table.txt', 'tableResourcesText'),
+        (r'^table.json', 'tableResourcesJson'),
         #
-        (r'^import$', 'importResource'),
-        #
-        (r'^delete_all$', 'deleteResources'),
+#         (r'^import$', 'importResource'),
+#         (r'^delete_all$', 'deleteResources'),
+#         (r'^load_all$', 'loadAllResources'),
         (r'^delete/(?P<resource_id>\d+)$', 'deleteResource'),
         #
-        (r'^load_all$', 'loadAllResources'),
-        #
-        (r'^(?P<resource_name>\S+)/content.txt$', 'resourceContentText'),
+        (r'^(?P<resource_name>\S+)/content.txt', 'resourceContentText'),
     )

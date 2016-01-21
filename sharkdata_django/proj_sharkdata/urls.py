@@ -15,6 +15,9 @@ urlpatterns = patterns('',
         (r'^resources/', include('app_resources.urls')),
         (r'^speciesobs/', include('app_speciesobs.urls')),
         (r'^documentation/', 'app_sharkdata_base.views.viewDocumentation'),
+        (r'^examplecode/', 'app_sharkdata_base.views.viewExampleCode'),
         (r'^datapolicy/', 'app_sharkdata_base.views.viewDataPolicy'),
         (r'^about/', 'app_sharkdata_base.views.viewAbout'),
+        
+        (r'^sharkdataadmin/', include('app_sharkdataadmin.urls')), 
     )

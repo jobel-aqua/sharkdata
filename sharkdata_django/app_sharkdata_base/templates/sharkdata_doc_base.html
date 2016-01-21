@@ -2,6 +2,9 @@
 
 {% block content %}
 
+			{% block standard-alerts %}
+			{% endblock standard-alerts %}
+			
             <div class="col-sm-9" id="content">
                 {% block doc-content %}
                                                          
@@ -15,7 +18,10 @@
                     <li><a href="/resources/">Resources</a></li>
                     <li><a href="/speciesobs/">Species observations</a></li>
                     <li class="nav-divider"></li>
+                    <li><a href="/sharkdataadmin/">Data administration</a></li>
+                    <li class="nav-divider"></li>
                     <li><a href="/documentation/">Documentation</a></li>
+                    <li><a href="/examplecode/">Example code</a></li>
                     <li><a href="/datapolicy/">Data policy</a></li>
                     <li class="nav-divider"></li>
                     <li><a href="/about/">About</a></li>
@@ -24,4 +30,3 @@
             </div>
 
 {% endblock content%}
-

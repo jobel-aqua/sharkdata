@@ -69,14 +69,15 @@
 	    <a href="/datasets/table.json">http://sharkdata.se/datasets/table.json</a></li>
 	    
 	    <li>Metadata for a dataset in text: <br>
-	    <a href="/datasets/SHARK_Speciesobs_2010_Zooplankton/metadata.txt">http://sharkdata.se/datasets/SHARK_Speciesobs_2010_Zooplankton/metadata.txt</a></li>
+	    <a href="/datasets/{{ first_dataset_name }}/metadata.txt">http://sharkdata.se/datasets/{{ first_dataset_name }}/metadata.txt</a></li>
 	    <li>Metadata for a dataset in JSON: <br>
-	    <a href="/datasets/SHARK_Speciesobs_2010_Zooplankton/metadata.json">http://sharkdata.se/datasets/SHARK_Speciesobs_2010_Zooplankton/metadata.json</a></li>
+	    <a href="/datasets/{{ first_dataset_name }}/metadata.json">http://sharkdata.se/datasets/{{ first_dataset_name }}/metadata.json</a></li>
 	    
 	    <li>Data from a dataset in text: <br>
-	    <a href="/datasets/SHARK_Speciesobs_2010_Zooplankton/data.txt">http://sharkdata.se/datasets/SHARK_Speciesobs_2010_Zooplankton/data.txt</a></li>
+	    <a href="/datasets/{{ first_dataset_name }}/data.txt">http://sharkdata.se/datasets/{{ first_dataset_name }}/data.txt</a></li>
 	    <li>Data from a dataset as a JSON object with header and rows: <br>
-	    <a href="/datasets/SHARK_Speciesobs_2010_Zooplankton/data.json">http://sharkdata.se/datasets/SHARK_Speciesobs_2010_Zooplankton/data.json</a></li>
+	    <a href="/datasets/{{ first_dataset_name }}/data.json">http://sharkdata.se/datasets/{{ first_dataset_name }}/data.json</a></li>
+	    
 	</ul>
 	
 	<h4>Resources:</h4>
@@ -89,15 +90,15 @@
 	
 	<h4>Species observations:</h4>
 	<ul>
-	    <li>View observations of the taxonomic class Gastropoda as a text table: <br>
-	    <a href="/speciesobs/table.txt/?class=Gastropoda">http://sharkdata.se/speciesobs/table.txt/?class=Gastropoda</a></li>
-	    <li>View observations of the taxonomic class Gastropoda as a JSON object with header and rows: <br>
-	    <a href="/speciesobs/table.json/?class=Gastropoda">http://sharkdata.se/speciesobs/table.json/?class=Gastropoda</a></li>
+	    <li>View observations for the scientific name {{ first_species_name }} as a text table: <br>
+	    <a href="/speciesobs/table.txt/?species={{ first_species_name }}">http://sharkdata.se/speciesobs/table.txt/?species={{ first_species_name }}</a></li>
+	    <li>View observations for the scientific name {{ first_species_name }} as a JSON object with header and rows: <br>
+	    <a href="/speciesobs/table.json/?species={{ first_species_name }}">http://sharkdata.se/speciesobs/table.json/?species={{ first_species_name }}</a></li>
 	    <li>Get a KML-file (this type of files can be opened in standard GIS programs): <br>
-	    <a href="/speciesobs/positions.kml/?class=Gastropoda">http://sharkdata.se/speciesobs/positions.kml/?class=Gastropoda</a></li>
-	    <a href="/speciesobs/year_info.kml/?class=Gastropoda">http://sharkdata.se/speciesobs/year_info.kml/?class=Gastropoda</a></li>
-	    <li>View observations of the taxonomic class Gastropoda on a simple map: <br>
-	    <a href="/speciesobs/map/?class=Gastropoda">http://sharkdata.se/speciesobs/map/?class=Gastropoda</a></li>
+	    <a href="/speciesobs/positions.kml/?species={{ first_species_name }}">http://sharkdata.se/speciesobs/positions.kml/?species={{ first_species_name }}</a></li>
+	    <a href="/speciesobs/year_info.kml/?species={{ first_species_name }}">http://sharkdata.se/speciesobs/year_info.kml/?species={{ first_species_name }}</a></li>
+	    <li>View observations for the scientific name {{ first_species_name }} on a simple map: <br>
+	    <a href="/speciesobs/map/?species={{ first_species_name }}">http://sharkdata.se/speciesobs/map/?species={{ first_species_name }}</a></li>
 	</ul>
 	There are some more intractive URL examples in the Species observations module.
 	

@@ -7,8 +7,9 @@ Template for Django settings. Django version 1.6.1.
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
-BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+import logging
 
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 # Application specific constants.
 APP_DATASETS_FTP_PATH = u'<REPLACE>' 
@@ -16,6 +17,9 @@ APP_DATASETS_FTP_PATH = u'<REPLACE>'
 # APP_DATASETS_FTP_PATH = u'/srv/django/proj_sharkdata/' # Unix example.
 APPS_VALID_USERS_AND_PASSWORDS_FOR_TEST = {u'<REPLACE>': u'<REPLACE>', u'<REPLACE>': u'<REPLACE>'}
 
+LOGGER = logging.getLogger('SHARKdata')
+LOGGING_PATH = None
+# LOGGING_PATH = '<REPLACE>'
 
 # SECURITY WARNING: keep the secret key used in production secret!
 #SECRET_KEY = '6pz8bnw1nlv9_!lh&*)00%3d9&bk8v5+!4u0o5cpcbe#8gum-8' # Default from Django.
@@ -89,3 +93,25 @@ STATICFILES_DIRS = (
 )
 
 STATIC_URL = '/static/'
+
+if LOGGING_PATH:
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'handlers': {
+            'file_error': {
+                'level': 'ERROR',
+                'class': 'logging.handlers.RotatingFileHandler',
+                'filename': LOGGING_PATH +'sharkdata_errors.log',
+                'maxBytes': 1024*1024,
+                'backupCount': 5,
+            },
+        },
+        'loggers': {
+            '': {
+                'handlers': ['file_error'],
+                'level': 'ERROR',
+                'propagate': True,
+            },
+        },
+    }

@@ -47,38 +47,56 @@ class SharkArchiveFileReader(object):
         """ """
         if self._zip is None:
             self.open()    
-        if u'data.txt' not in self._zip.namelist():
-            raise UserWarning('The entry data.txt is missing in ' + self._filepathname)
+        if u'shark_data.txt' not in self._zip.namelist():
+            raise UserWarning('The entry shark_data.txt is missing in ' + self._filepathname)
         #    
-        return self._zip.open(u'data.txt').read()
+        return self._zip.open(u'shark_data.txt').read()
+
+    def getDataColumnsAsText(self):
+        """ """
+        if self._zip is None:
+            self.open()    
+        if u'shark_data_columns.txt' not in self._zip.namelist():
+            raise UserWarning('The entry shark_data_columns.txt is missing in ' + self._filepathname)
+        #    
+        return self._zip.open(u'shark_data_columns.txt').read()
 
     def getDataAsTable(self, target_table):
         """ """
 #         if self._zip is None:
 #             self.open()    
-#         if u'data.txt' not self._zip.namelist():
-#             raise UserWarning('The entry data.txt is missing in ' + self._filepathname')
+#         if u'shark_data.txt' not self._zip.namelist():
+#             raise UserWarning('The entry shark_data.txt is missing in ' + self._filepathname')
 #         #    
-#         return self._zip.open(u'data.txt', 'r')
+#         return self._zip.open(u'shark_data.txt', 'r')
 
     def getMetadataAsText(self):
         """ """
         if self._zip is None:
             self.open()    
-        if u'metadata.txt' not in self._zip.namelist():
-            raise UserWarning('The entry data.txt is missing in ' + self._filepathname)
+        if u'shark_metadata.txt' not in self._zip.namelist():
+            raise UserWarning('The entry shark_metadata.txt is missing in ' + self._filepathname)
         #    
-        return self._zip.open(u'metadata.txt').read()
+        return self._zip.open(u'shark_metadata.txt').read()
 
     def getMetadataAutoAsText(self):
         """ """
         if self._zip is None:
             self.open()    
-        if u'metadata_auto.txt' not in self._zip.namelist():
-            raise UserWarning('The entry metadata_auto.txt is missing in ' + self._filepathname)
+        if u'shark_metadata_auto.txt' not in self._zip.namelist():
+            raise UserWarning('The entry shark_metadata_auto.txt is missing in ' + self._filepathname)
         #    
-        return self._zip.read(u'metadata_auto.txt') 
-        #return u'\r\n'.join(self._zip.open(u'metadata_auto.txt').readlines())
+        return self._zip.read(u'shark_metadata_auto.txt') 
+        #return u'\r\n'.join(self._zip.open(u'shark_metadata_auto.txt').readlines())
+
+    def isDataColumnsAvailable(self):
+        """ """
+        if self._zip is None:
+            self.open()    
+        if u'shark_data_columns.txt' in self._zip.namelist():
+            return True
+        #    
+        return False
 
 
 class SharkArchiveFileWriter(object):
@@ -104,7 +122,7 @@ class SharkArchiveFileWriter(object):
         try:
             new_tmp_file = os.path.join(tmpdir, 'tmp.zip')
             zip_read = zipfile.ZipFile(zip_file, 'r')
-            zip_write = zipfile.ZipFile(new_tmp_file, 'w')
+            zip_write = zipfile.ZipFile(new_tmp_file, 'w', zipfile.ZIP_DEFLATED)
             for item in zip_read.infolist():
                 if item.filename not in entries:
                     data = zip_read.read(item.filename)
@@ -118,11 +136,11 @@ class SharkArchiveFileWriter(object):
                              encoding = u'cp1252',
                              fieldseparator = u'\t'):
         """ """
-        # Remove the entry metadata_auto.txt
-        self.removeEntryFromZip(self._filepathname, ['metadata_auto.txt'])
+        # Remove the entry shark_metadata_auto.txt
+        self.removeEntryFromZip(self._filepathname, ['shark_metadata_auto.txt'])
         
         
-        zip = zipfile.ZipFile(self._filepathname, 'a') # Append to existing file. 
+        zip = zipfile.ZipFile(self._filepathname, 'a', zipfile.ZIP_DEFLATED) # Append to existing file. 
         try:
             #
             year_index = None
@@ -142,7 +160,7 @@ class SharkArchiveFileWriter(object):
             max_latitude = None
             parameter_unit_list = []
             #
-            for index, row in enumerate(zip.open(u'data.txt').readlines()):
+            for index, row in enumerate(zip.open(u'shark_data.txt').readlines()):
                 # Convert to unicode and separate fields.
                 row = unicode(row, encoding, 'strict')
                 row = [item.strip() for item in row.split(fieldseparator)]
@@ -208,7 +226,7 @@ class SharkArchiveFileWriter(object):
                     metadata_rows.append(u'unit#' + unicode(index) + u': ' + pair[1])
             # Join rows and write to zip.
             metadata = u'\r\n'.join(metadata_rows)
-            zip.writestr('metadata_auto.txt', metadata)
+            zip.writestr('shark_metadata_auto.txt', metadata)
         finally:
             zip.close()
 
@@ -284,58 +302,58 @@ class SharkArchive(object):
         
 
 # FOR DEVELOPMENT:
-def shark_archive_test():
-    """ """
-    archive = SharkArchive(u'/home/parallels/Desktop/SHARK_FTP/datasets')
-    for filename in archive.getSharkArchiveFilenames():
-        print(filename)
-        name, datatype, version = archive.splitFilename(filename)
-        print(name)
-        print(datatype)
-        print(version)
-     
-    print(u'-----')    
-         
-    for filename in archive.getLatestSharkArchiveFilenames():
-        print(filename)
-        name, datatype, version = archive.splitFilename(filename)
-        print(name)
-        print(datatype)
-        print(version)
-         
-    print(u'--- List metadata-auto ---') 
-     
-    zipreader = SharkArchiveFileReader(u'SHARK_Speciesobs_2010_Zooplankton_version_TEST2013-11-10.zip', 
-                                       u'/home/parallels/Desktop/SHARK_FTP/datasets')
-    try:
-        zipreader.open()
-        for item in zipreader.listContent():
-            print(u'Content: ' + item)
-            
-        print(zipreader.getMetadataAutoAsText())    
-        
-    finally:
-        zipreader.close()
-        
-    print(u'--- Calculate metadata-auto ---') 
-    
-    zipwriter = SharkArchiveFileWriter(u'SHARK_Speciesobs_2010_Zooplankton_version_TEST2013-11-10.zip', 
-                                       u'/home/parallels/Desktop/SHARK_FTP/datasets')
-    zipwriter.generateMetadataAuto()
-      
-    zipwriter = SharkArchiveFileWriter(u'SHARK_Speciesobs_2011_Zooplankton_version_TEST2013-11-10.zip', 
-                                       u'/home/parallels/Desktop/SHARK_FTP/datasets')
-    zipwriter.generateMetadataAuto()
-      
-    zipwriter = SharkArchiveFileWriter(u'SHARK_Speciesobs_2012_Zooplankton_version_TEST2013-11-10.zip', 
-                                       u'/home/parallels/Desktop/SHARK_FTP/datasets')
-    zipwriter.generateMetadataAuto()
-      
-    print(u'-----') 
-    
-
-if __name__ == "__main__":
-    shark_archive_test()
+# def shark_archive_test():
+#     """ """
+#     archive = SharkArchive(u'/home/parallels/Desktop/SHARK_FTP/datasets')
+#     for filename in archive.getSharkArchiveFilenames():
+#         print(filename)
+#         name, datatype, version = archive.splitFilename(filename)
+#         print(name)
+#         print(datatype)
+#         print(version)
+#      
+#     print(u'-----')    
+#          
+#     for filename in archive.getLatestSharkArchiveFilenames():
+#         print(filename)
+#         name, datatype, version = archive.splitFilename(filename)
+#         print(name)
+#         print(datatype)
+#         print(version)
+#          
+#     print(u'--- List shark-metadata-auto ---') 
+#      
+#     zipreader = SharkArchiveFileReader(u'SHARK_Speciesobs_2010_Zooplankton_version_TEST2013-11-10.zip', 
+#                                        u'/home/parallels/Desktop/SHARK_FTP/datasets')
+#     try:
+#         zipreader.open()
+#         for item in zipreader.listContent():
+#             print(u'Content: ' + item)
+#             
+#         print(zipreader.getMetadataAutoAsText())    
+#         
+#     finally:
+#         zipreader.close()
+#         
+#     print(u'--- Calculate shark-metadata-auto ---') 
+#     
+#     zipwriter = SharkArchiveFileWriter(u'SHARK_Speciesobs_2010_Zooplankton_version_TEST2013-11-10.zip', 
+#                                        u'/home/parallels/Desktop/SHARK_FTP/datasets')
+#     zipwriter.generateMetadataAuto()
+#       
+#     zipwriter = SharkArchiveFileWriter(u'SHARK_Speciesobs_2011_Zooplankton_version_TEST2013-11-10.zip', 
+#                                        u'/home/parallels/Desktop/SHARK_FTP/datasets')
+#     zipwriter.generateMetadataAuto()
+#       
+#     zipwriter = SharkArchiveFileWriter(u'SHARK_Speciesobs_2012_Zooplankton_version_TEST2013-11-10.zip', 
+#                                        u'/home/parallels/Desktop/SHARK_FTP/datasets')
+#     zipwriter.generateMetadataAuto()
+#       
+#     print(u'-----') 
+#     
+# 
+# if __name__ == "__main__":
+#     shark_archive_test()
 
 
 

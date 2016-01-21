@@ -6,23 +6,24 @@
 
 from django import forms
 import app_speciesobs.models as models
+import urllib
 
-class UpdateSpeciesObsForm(forms.Form):
-    """ """
-    user = forms.CharField(label="User")
-    password = forms.CharField(label="Password", widget=forms.PasswordInput())
-
-
-class LoadSpeciesObsForm(forms.Form):
-    """ """
-    user = forms.CharField(label="User")
-    password = forms.CharField(label="Password", widget=forms.PasswordInput())
-
-
-class CleanUpSpeciesObsForm(forms.Form):
-    """ """
-    user = forms.CharField(label="User")
-    password = forms.CharField(label="Password", widget=forms.PasswordInput())
+# class UpdateSpeciesObsForm(forms.Form):
+#     """ """
+#     user = forms.CharField(label="User")
+#     password = forms.CharField(label="Password", widget=forms.PasswordInput())
+# 
+# 
+# class LoadSpeciesObsForm(forms.Form):
+#     """ """
+#     user = forms.CharField(label="User")
+#     password = forms.CharField(label="Password", widget=forms.PasswordInput())
+# 
+# 
+# class CleanUpSpeciesObsForm(forms.Form):
+#     """ """
+#     user = forms.CharField(label="User")
+#     password = forms.CharField(label="Password", widget=forms.PasswordInput())
 
 
 class SpeciesObsFilterForm(forms.Form):
@@ -114,67 +115,68 @@ def parse_filter_params(request_params, db_filter_dict, url_param_list):
 #         dataset_filter = request_params['dataset']
 #         if dataset_filter not in [u'', u'All']:
 #             db_filter_dict['{0}__{1}'.format('dataset_name', 'startswith')] = dataset_filter
-#             url_param_list.append(u'dataset_name=' + dataset_filter)
+#             url_param_list.append(u'dataset_name=' + urllib.quote_plus(dataset_filter))
     # 'year' can be used for a single year.
     if u'year' in request_params:
         year_from_filter = request_params['year']
         year_to_filter = request_params['year']
-        if year_from_filter not in [u'', u'All']:
-            db_filter_dict['{0}__{1}'.format('sampling_year', 'gte')] = year_from_filter
-            db_filter_dict['{0}__{1}'.format('sampling_year', 'lte')] = year_to_filter
-            url_param_list.append(u'year_from=' + year_from_filter)
-            url_param_list.append(u'year_to=' + year_to_filter)
+        if year_from_filter not in [u'', u'All', u'-']:
+            db_filter_dict['{0}__{1}'.format('sampling_year', 'gte')] = urllib.unquote_plus(year_from_filter)
+            db_filter_dict['{0}__{1}'.format('sampling_year', 'lte')] = urllib.unquote_plus(year_to_filter)
+            url_param_list.append(u'year_from=' + urllib.quote_plus(year_from_filter))
+            url_param_list.append(u'year_to=' + urllib.quote_plus(year_to_filter))
     #
     if u'year_from' in request_params:
         year_from_filter = request_params['year_from']
-        if year_from_filter not in [u'', u'All']:
-            db_filter_dict['{0}__{1}'.format('sampling_year', 'gte')] = year_from_filter
-            url_param_list.append(u'year_from=' + year_from_filter)
+        if year_from_filter not in [u'', u'All', u'-']:
+            db_filter_dict['{0}__{1}'.format('sampling_year', 'gte')] = urllib.unquote_plus(year_from_filter)
+            url_param_list.append(u'year_from=' + urllib.quote_plus(year_from_filter))
     #
     if u'year_to' in request_params:
         year_to_filter = request_params['year_to']
-        if year_to_filter not in [u'', u'All']:
-            db_filter_dict['{0}__{1}'.format('sampling_year', 'lte')] = year_to_filter
-            url_param_list.append(u'year_to=' + year_to_filter)
+        if year_to_filter not in [u'', u'All', u'-']:
+            db_filter_dict['{0}__{1}'.format('sampling_year', 'lte')] = urllib.unquote_plus(year_to_filter)
+            url_param_list.append(u'year_to=' + urllib.quote_plus(year_to_filter))
 #     # taxon_kingdom
 #     if u'kingdom' in request_params:
 #         kingdom_filter = request_params['kingdom']
 #         if kingdom_filter not in [u'', u'All']:
-#             db_filter_dict['{0}__{1}'.format('taxon_kingdom', 'iexact')] = kingdom_filter
-#             url_param_list.append(u'kingdom=' + kingdom_filter)
+#             db_filter_dict['{0}__{1}'.format('taxon_kingdom', 'iexact')] = urllib.unquote_plus(kingdom_filter)
+#             url_param_list.append(u'kingdom=' + urllib.quote_plus(kingdom_filter))
 #     # taxon_phylum
 #     if u'phylum' in request_params:
 #         phylum_filter = request_params['phylum']
 #         if phylum_filter not in [u'', u'All']:
-#             db_filter_dict['{0}__{1}'.format('taxon_phylum', 'iexact')] = phylum_filter
-#             url_param_list.append(u'phylum=' + phylum_filter)
+#             db_filter_dict['{0}__{1}'.format('taxon_phylum', 'iexact')] = urllib.unquote_plus(phylum_filter)
+#             url_param_list.append(u'phylum=' + urllib.quote_plus(phylum_filter))
     # taxon_class
     if u'class' in request_params:
         class_filter = request_params['class']
-        if class_filter not in [u'', u'All']:
-            db_filter_dict['{0}__{1}'.format('taxon_class', 'iexact')] = class_filter
-            url_param_list.append(u'class=' + class_filter)
+        if class_filter not in [u'', u'All', u'-']:
+            db_filter_dict['{0}__{1}'.format('taxon_class', 'iexact')] = urllib.unquote_plus(class_filter)
+            url_param_list.append(u'class=' + urllib.quote_plus(class_filter))
     # taxon_order
     if u'order' in request_params:
         order_filter = request_params['order']
-        if order_filter not in [u'', u'All']:
-            db_filter_dict['{0}__{1}'.format('taxon_order', 'iexact')] = order_filter
-            url_param_list.append(u'order=' + order_filter)
+        if order_filter not in [u'', u'All', u'-']:
+            db_filter_dict['{0}__{1}'.format('taxon_order', 'iexact')] = urllib.unquote_plus(order_filter)
+            url_param_list.append(u'order=' + urllib.quote_plus(order_filter))
 #     # taxon_genus
 #     if u'genus' in request_params:
 #         genus_filter = request_params['genus']
 #         if genus_filter not in [u'', u'All']:
-#             db_filter_dict['{0}__{1}'.format('taxon_genus', 'iexact')] = genus_filter
-#             url_param_list.append(u'genus=' + genus_filter)
+#             db_filter_dict['{0}__{1}'.format('taxon_genus', 'iexact')] = urllib.unquote_plus(genus_filter)
+#             url_param_list.append(u'genus=' + urllib.quote_plus(genus_filter))
     # taxon_species
     if u'species' in request_params:
-        genus_filter = request_params['species']
-        if genus_filter not in [u'', u'All']:
-            db_filter_dict['{0}__{1}'.format('taxon_species', 'iexact')] = genus_filter
-            url_param_list.append(u'species=' + genus_filter)
+        species_filter = request_params['species']
+        if species_filter not in [u'', u'All', u'-']:
+            db_filter_dict['{0}__{1}'.format('taxon_species', 'iexact')] = urllib.unquote_plus(species_filter)
+            url_param_list.append(u'species=' + urllib.quote_plus(species_filter))
     #
     if u'scientific_name' in request_params:
         scientific_name_filter = request_params['scientific_name']
-        if scientific_name_filter not in [u'', u'All']:
-            db_filter_dict['{0}__{1}'.format('scientific_name', 'iexact')] = scientific_name_filter
-            url_param_list.append(u'scientific_name=' + scientific_name_filter)
+        if scientific_name_filter not in [u'', u'All', u'-']:
+            db_filter_dict['{0}__{1}'.format('scientific_name', 'iexact')] = urllib.unquote_plus(scientific_name_filter)
+            url_param_list.append(u'scientific_name=' + urllib.quote_plus(scientific_name_filter))
+

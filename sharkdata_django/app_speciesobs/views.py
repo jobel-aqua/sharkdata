@@ -9,6 +9,7 @@ import json
 
 from django.http import HttpResponse,HttpResponseRedirect
 from django.template import RequestContext
+from django.core.context_processors import csrf
 from django.shortcuts import render_to_response
 from django.contrib.gis.shortcuts import render_to_kml
 from django.conf import settings
@@ -18,23 +19,29 @@ import app_speciesobs.forms as forms
 import shark_utils
 import app_speciesobs.speciesobs_utils as speciesobs_utils
 import django.core.paginator as paginator
+import app_sharkdataadmin.models as admin_models
+
 
 def listSpeciesObs(request):
     """ """    
     error_message = None # initially.
     #
+    header_language = request.GET.get('header_language', 'darwin_core')
     data_header = speciesobs_utils.SpeciesObsUtils().getHeaders()
+    translated_headers = speciesobs_utils.SpeciesObsUtils().translateHeaders(data_header, 
+                                                                             language = header_language)
     #
     data_rows = None
     #
     if request.method == "GET":
         form = forms.SpeciesObsFilterForm()
-        return render_to_response("list_speciesobs.html",
-                                  {'form': form,
-                                   'data_header' : None,
-                                   'data_rows' : None,
-                                   'url_table' : None,
-                                   'error_message' : error_message})
+        contextinstance = {'form': form,
+                           'data_header' : None,
+                           'data_rows' : None,
+                           'url_table' : None,
+                           'error_message' : error_message}
+        contextinstance.update(csrf(request))
+        return render_to_response("list_speciesobs.html", contextinstance)
     elif request.method == "POST":
         if request.POST['confirm'] == "get_data":
             form = forms.SpeciesObsFilterForm(request.POST)
@@ -44,15 +51,25 @@ def listSpeciesObs(request):
             forms.parse_filter_params(request.POST, db_filter_dict, url_param_list) 
             #
             data_rows = []
-            translated_headers = []
-            #
-            url_params = u' '.join(url_param_list)
-            if ((u'class' in url_params) or 
-                (u'order' in url_params) or 
-                (u'species' in url_params) or 
-                (u'scientific_name' in url_params)):
+            # Check parameters to avoid too long queries.
+            class_param = u''
+            order_param = u''
+            species_param = u''
+            scientific_name_param = u''
+            if u'class' in request.POST:
+                class_param = request.POST['class']
+            if u'order' in request.POST:
+                order_param = request.POST['order']
+            if u'species' in request.POST:
+                species_param = request.POST['species']
+            if u'scientific_name' in request.POST:
+                scientific_name_param = request.POST['scientific_name']
+            # Check for empty or '-'.
+            if ((class_param not in [u'All', u'-', u'']) or 
+                (order_param not in [u'All', u'-', u'']) or 
+                (species_param not in [u'All', u'-', u'']) or 
+                (scientific_name_param not in [u'All', u'-', u''])):
                 #
-                translated_headers = speciesobs_utils.SpeciesObsUtils().translateHeaders(data_header)
                 # Only show ACTIVE rows as a part of the HTML page.
                 db_filter_dict[u'status__iexact'] = u'ACTIVE'
                 data_rows = models.SpeciesObs.objects.values_list(*data_header).filter(**db_filter_dict)
@@ -63,12 +80,13 @@ def listSpeciesObs(request):
             else:
                 error_message = u'At least one of Scientific name, Class, Order or Species must be selected. Please select one and try again...'
             #
-            return render_to_response("list_speciesobs.html",
-                                      {'form': form,
-                                       'data_header' : translated_headers,
-                                       'data_rows' : data_rows,
-                                       'url_table' : None,
-                                       'error_message' : error_message})
+            contextinstance = {'form': form,
+                               'data_header' : data_header,
+                               'data_rows' : data_rows,
+                               'url_table' : None,
+                               'error_message' : error_message}
+            contextinstance.update(csrf(request))
+            return render_to_response("list_speciesobs.html", contextinstance)
         #
         if request.POST['confirm'] == "view_url":
             #
@@ -95,21 +113,22 @@ def listSpeciesObs(request):
             url_table.append(u'/speciesobs/positions.kml/' + url_params)
             url_table.append(u'/speciesobs/year_info.kml/' + url_params)
             url_table.append(u'/speciesobs/map/' + url_params)
-            url_table.append(u'http://maps.google.se/?q=http://sharkdata.se/speciesobs/positions.kml/' + url_params)
-            url_table.append(u'http://maps.google.se/?q=http://sharkdata.se/speciesobs/year_info.kml/' + url_params)
-            
-            url_table.append(u'---')
-            url_table.append(u'For development (from http://test.sharkdata.se):')
-            url_table.append(u'http://maps.google.se/?q=http://test.sharkdata.se/speciesobs/positions.kml/' + url_params)
-            url_table.append(u'http://maps.google.se/?q=http://test.sharkdata.se/speciesobs/year_info.kml/' + url_params)
+#             url_table.append(u'http://maps.google.se/?q=http://sharkdata.se/speciesobs/positions.kml/' + url_params)
+#             url_table.append(u'http://maps.google.se/?q=http://sharkdata.se/speciesobs/year_info.kml/' + url_params)
+#             
+#             url_table.append(u'---')
+#             url_table.append(u'For development (from http://test.sharkdata.se):')
+#             url_table.append(u'http://maps.google.se/?q=http://test.sharkdata.se/speciesobs/positions.kml/' + url_params)
+#             url_table.append(u'http://maps.google.se/?q=http://test.sharkdata.se/speciesobs/year_info.kml/' + url_params)
             #
             form = forms.SpeciesObsFilterForm(request.POST)
-            return render_to_response("list_speciesobs.html",
-                                      {'form': form,
-                                       'data_header' : None,
-                                       'data_rows' : None,
-                                       'url_table' : url_table,
-                                       'error_message' : error_message})
+            contextinstance = {'form': form,
+                               'data_header' : None,
+                               'data_rows' : None,
+                               'url_table' : url_table,
+                               'error_message' : error_message}
+            contextinstance.update(csrf(request))
+            return render_to_response("list_speciesobs.html", contextinstance)
     #
     return HttpResponseRedirect("/speciesobs")
 
@@ -119,13 +138,15 @@ def tableSpeciesObsText(request):
     pagination_page = request.GET.get('page', None)
     pagination_size = request.GET.get('per_page', 100) # Default 100.
     #
+    header_language = request.GET.get('header_language', 'darwin_core')
     data_header = speciesobs_utils.SpeciesObsUtils().getHeaders()
+    translated_headers = speciesobs_utils.SpeciesObsUtils().translateHeaders(data_header, 
+                                                                             language = header_language)
     #
     db_filter_dict = {}
     url_param_list = []
     forms.parse_filter_params(request.GET, db_filter_dict, url_param_list) 
     #
-    translated_headers = speciesobs_utils.SpeciesObsUtils().translateHeaders(data_header)
     # Only show ACTIVE rows, if not all status is requested.
     if request.GET.get('view_deleted', u'false') != u'true':
         db_filter_dict[u'status__iexact'] = u'ACTIVE'
@@ -140,7 +161,8 @@ def tableSpeciesObsText(request):
             # If page is out of range, return header only.
             data_rows = []
     #
-    response = HttpResponse(content_type = 'text/plain')    
+    response = HttpResponse(content_type = 'text/plain; charset=utf8')    
+    response['Content-Disposition'] = 'attachment; filename=species_observations.txt'    
     response.write(u'\t'.join(translated_headers) + u'\r\n') # Tab separated.
     for row in data_rows:
         response.write(u'\t'.join(row) + u'\r\n') # Tab separated.        
@@ -152,13 +174,15 @@ def tableSpeciesObsJson(request):
     pagination_page = request.GET.get('page', None)
     pagination_size = request.GET.get('per_page', 100) # Default 100.
     #
+    header_language = request.GET.get('header_language', 'darwin_core')
     data_header = speciesobs_utils.SpeciesObsUtils().getHeaders()
+    translated_headers = speciesobs_utils.SpeciesObsUtils().translateHeaders(data_header, 
+                                                                             language = header_language)
     #
     db_filter_dict = {}
     url_param_list = []
     forms.parse_filter_params(request.GET, db_filter_dict, url_param_list) 
     #
-    translated_headers = speciesobs_utils.SpeciesObsUtils().translateHeaders(data_header)
     # Only show ACTIVE rows, if not all status is requested.
     if request.GET.get('view_deleted', u'false') != u'true':
         db_filter_dict[u'status__iexact'] = u'ACTIVE'
@@ -173,7 +197,8 @@ def tableSpeciesObsJson(request):
             # If page is out of range, return header only.
             data_rows = []
     #
-    response = HttpResponse(content_type = 'application/json')
+    response = HttpResponse(content_type = 'application/json; charset=utf8')
+    response['Content-Disposition'] = 'attachment; filename=species_observations.json'    
     response.write(u'{')
     if pagination_page and pag: 
         response.write(u'"page": ' + unicode(pagination_page) + u', ')
@@ -350,271 +375,111 @@ def mapOpenlayers(request):
     return render_to_response('speciesobs_map.html', {'kml_link' : kml_link,
                                                       'location_count' : observations_count}) 
 
-def updateSpeciesObs(request):
-    """ Updates species observations based of content in the datasets. """
-    #
-    error_message = None # initially.
-    #
-    if request.method == "GET":
-        #
-        form = forms.UpdateSpeciesObsForm()
-        return render_to_response("update_speciesobs.html",
-                                  {'form'   : form,
-                                   'error_message' : None})
-    elif request.method == "POST":
-        form = forms.UpdateSpeciesObsForm(request.POST)
-        if form.is_valid():
-            #
-            user = request.POST['user']
-            password = request.POST['password']
-            if password != settings.APPS_VALID_USERS_AND_PASSWORDS_FOR_TEST.get(user, None):
-                error_message = u'Not a valid user or password. Please try again...'   
-            #
-            if error_message == None:
-                try:
-                    error_message = speciesobs_utils.SpeciesObsUtils().updateSpeciesObsInThread()
-                except:
-                    error_message = u"Can't update species observations from datasets."
-                     
-            # OK.
-            if error_message == None:
-                return HttpResponseRedirect("/speciesobs")
-        #
-        return render_to_response("update_speciesobs.html",
-                                  {'form'   : form,
-                                   'error_message' : error_message})
-    # Not a valid request method.
-    return HttpResponseRedirect("/speciesobs")
-    
-def loadSpeciesObs(request):
-    """ Load species observations from file. """
-    #
-    error_message = None # initially.
-    #
-    if request.method == "GET":
-        #
-        form = forms.LoadSpeciesObsForm()
-        return render_to_response("load_speciesobs.html",
-                                  {'form'   : form,
-                                   'error_message' : None})
-    elif request.method == "POST":
-        form = forms.LoadSpeciesObsForm(request.POST)
-        if form.is_valid():
-            #
-            user = request.POST['user']
-            password = request.POST['password']
-            if password != settings.APPS_VALID_USERS_AND_PASSWORDS_FOR_TEST.get(user, None):
-                error_message = u'Not a valid user or password. Please try again...'   
-            #
-            if error_message == None:
-                try:
-                    error_message = speciesobs_utils.SpeciesObsUtils().loadSpeciesObsInThread()
-                except:
-                    error_message = u"Can't load species observations from file."
-                     
-            # OK.
-            if error_message == None:
-                return HttpResponseRedirect("/speciesobs")
-        #
-        return render_to_response("load_speciesobs.html",
-                                  {'form'   : form,
-                                   'error_message' : error_message})
-    # Not a valid request method.
-    return HttpResponseRedirect("/speciesobs")
-    
-    
-def cleanUpSpeciesObs(request):
-    """ Removes species observations with status='DELETED'. """
-    #
-    error_message = None # initially.
-    #
-    if request.method == "GET":
-        #
-        form = forms.CleanUpSpeciesObsForm()
-        return render_to_response("clean_up_speciesobs.html",
-                                  {'form'   : form,
-                                   'error_message' : None})
-    elif request.method == "POST":
-        form = forms.CleanUpSpeciesObsForm(request.POST)
-        if form.is_valid():
-            #
-            user = request.POST['user']
-            password = request.POST['password']
-            if password != settings.APPS_VALID_USERS_AND_PASSWORDS_FOR_TEST.get(user, None):
-                error_message = u'Not a valid user or password. Please try again...'   
-            #
-            if error_message == None:
-                try:
-                    error_message = speciesobs_utils.SpeciesObsUtils().cleanUpSpeciesObsInThread()
-                except:
-                    error_message = u"Can't clean up species observations."
-                     
-            # OK.
-            if error_message == None:
-                return HttpResponseRedirect("/speciesobs")
-        #
-        return render_to_response("clean_up_speciesobs.html",
-                                  {'form'   : form,
-                                   'error_message' : error_message})
-    # Not a valid request method.
-    return HttpResponseRedirect("/speciesobs")
-    
-   
-    
-    
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# def deleteAllSpeciesObs(request):
-#     """ Deletes all rows in the database. """
+# def updateSpeciesObs(request):
+#     """ Updates species observations based of content in the datasets. """
+#     #
+#     error_message = None # initially.
+#     #
 #     if request.method == "GET":
 #         #
-#         form = forms.DeleteAllSpeciesObsForm()
-#         return render_to_response("delete_all_speciesobs.html",
+#         form = forms.UpdateSpeciesObsForm()
+#         return render_to_response("update_speciesobs.html",
 #                                   {'form'   : form,
 #                                    'error_message' : None})
 #     elif request.method == "POST":
-#         error_message = None # initially.
-#         #
-#         form = forms.DeleteAllSpeciesObsForm(request.POST)
+#         form = forms.UpdateSpeciesObsForm(request.POST)
 #         if form.is_valid():
 #             #
 #             user = request.POST['user']
-#             if user not in settings.APPS_VALID_USERS_AND_PASSWORDS_FOR_TEST.keys():
-#                 error_message = u'Not a valid user. Please try again...'   
+#             password = request.POST['password']
+#             if password != settings.APPS_VALID_USERS_AND_PASSWORDS_FOR_TEST.get(user, None):
+#                 error_message = u'Not a valid user or password. Please try again...'   
 #             #
 #             if error_message == None:
 #                 try:
-#                     models.SpeciesObs.objects.all().delete()
+#                     error_message = speciesobs_utils.SpeciesObsUtils().updateSpeciesObsInThread()
 #                 except:
-#                     error_message = u"Can't delete species observations from the database."
+#                     error_message = u"Can't update species observations from datasets."
+#                      
 #             # OK.
 #             if error_message == None:
 #                 return HttpResponseRedirect("/speciesobs")
 #         #
-#         return render_to_response("delete_all_speciesobs.html",
+#         return render_to_response("update_speciesobs.html",
 #                                   {'form'   : form,
 #                                    'error_message' : error_message})
 #     # Not a valid request method.
 #     return HttpResponseRedirect("/speciesobs")
-
-# def loadAllSpeciesObs(request):
-#     """ """
-#     """ Deletes all rows in the database. """
+    
+# def loadSpeciesObs(request):
+#     """ Load species observations from file. """
+#     #
+#     error_message = None # initially.
+#     #
 #     if request.method == "GET":
 #         #
-#         form = forms.LoadAllSpeciesObsForm()
-#         return render_to_response("load_all_speciesobs.html",
+#         form = forms.LoadSpeciesObsForm()
+#         return render_to_response("load_speciesobs.html",
 #                                   {'form'   : form,
 #                                    'error_message' : None})
 #     elif request.method == "POST":
-#         error_message = None # initially.
-#         #
-#         form = forms.LoadAllSpeciesObsForm(request.POST)
+#         form = forms.LoadSpeciesObsForm(request.POST)
 #         if form.is_valid():
 #             #
 #             user = request.POST['user']
-#             if user not in settings.APPS_VALID_USERS_AND_PASSWORDS_FOR_TEST.keys():
-#                 error_message = u'Not a valid user. Please try again...'   
+#             password = request.POST['password']
+#             if password != settings.APPS_VALID_USERS_AND_PASSWORDS_FOR_TEST.get(user, None):
+#                 error_message = u'Not a valid user or password. Please try again...'   
 #             #
 #             if error_message == None:
 #                 try:
-# #                     speciesobs_utils.SpeciesObsUtils().loadAllSpeciesObs()
-#                     error_message = speciesobs_utils.SpeciesObsUtils().loadAllSpeciesObsInThread()
+#                     error_message = speciesobs_utils.SpeciesObsUtils().loadSpeciesObsInThread()
 #                 except:
-#                     error_message = u"Can't load all species observations."
-#                     
+#                     error_message = u"Can't load species observations from file."
+#                      
 #             # OK.
 #             if error_message == None:
 #                 return HttpResponseRedirect("/speciesobs")
 #         #
-#         return render_to_response("load_all_speciesobs.html",
+#         return render_to_response("load_speciesobs.html",
 #                                   {'form'   : form,
 #                                    'error_message' : error_message})
 #     # Not a valid request method.
 #     return HttpResponseRedirect("/speciesobs")
-
-# def historyUpdate(request):
-#     """ """
-#     """ Deletes all rows in the database. """
+    
+    
+# def cleanUpSpeciesObs(request):
+#     """ Removes species observations with status='DELETED'. """
+#     #
+#     error_message = None # initially.
+#     #
 #     if request.method == "GET":
 #         #
-#         form = forms.UpdateHistoryForm()
-#         return render_to_response("update_history.html",
+#         form = forms.CleanUpSpeciesObsForm()
+#         return render_to_response("clean_up_speciesobs.html",
 #                                   {'form'   : form,
 #                                    'error_message' : None})
 #     elif request.method == "POST":
-#         error_message = None # initially.
-#         #
-#         form = forms.UpdateHistoryForm(request.POST)
+#         form = forms.CleanUpSpeciesObsForm(request.POST)
 #         if form.is_valid():
 #             #
 #             user = request.POST['user']
-#             if user not in settings.APPS_VALID_USERS_AND_PASSWORDS_FOR_TEST.keys():
-#                 error_message = u'Not a valid user. Please try again...'   
+#             password = request.POST['password']
+#             if password != settings.APPS_VALID_USERS_AND_PASSWORDS_FOR_TEST.get(user, None):
+#                 error_message = u'Not a valid user or password. Please try again...'   
 #             #
 #             if error_message == None:
 #                 try:
-# #                     speciesobs_utils.SpeciesObsUtils().historyUpdate()
-#                     error_message = speciesobs_utils.SpeciesObsUtils().historyUpdateInThread()
+#                     error_message = speciesobs_utils.SpeciesObsUtils().cleanUpSpeciesObsInThread()
 #                 except:
-#                     error_message = u"Can't update the species observations history."
+#                     error_message = u"Can't clean up species observations."
+#                      
 #             # OK.
 #             if error_message == None:
 #                 return HttpResponseRedirect("/speciesobs")
 #         #
-#         return render_to_response("update_history.html",
+#         return render_to_response("clean_up_speciesobs.html",
 #                                   {'form'   : form,
 #                                    'error_message' : error_message})
 #     # Not a valid request method.
 #     return HttpResponseRedirect("/speciesobs")
-
-# def tableHistoryText(request):
-#     """ """
-#     history_header = [
-#             u'generated_occurrence_id', 
-#             u'state', 
-#             u'added_date', 
-#             u'deleted_date', 
-#             ]
-#     translated_header = [
-#             u'Occurrence id', 
-#             u'State', 
-#             u'Added date', 
-#             u'Deleted date', 
-#             ]
-#     #
-#     db_filter_dict = {}
-#     url_param_list = []
-#     forms.parse_filter_params(request.GET, db_filter_dict, url_param_list) 
-#     #
-#     data_rows = models.OccurrenceIdHistory.objects.values_list(*history_header).filter(**db_filter_dict)
-#     #
-#     response = HttpResponse(content_type = 'text/plain')
-#     # Header.    
-#     response.write(u'\t'.join(translated_header) + u'\r\n') # Tab separated.
-#     # Rows.
-#     for row in data_rows:
-#         response.write(u'\t'.join(row) + u'\r\n') # Tab separated.        
-#     return response
-    
-# def historyClear(request):
-#     """ """
-#     speciesobs_utils.SpeciesObsUtils().historyClear()
-#     #
-#     return HttpResponseRedirect("/speciesobs")
-    

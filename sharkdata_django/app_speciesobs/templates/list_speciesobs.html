@@ -6,17 +6,14 @@
 
 {% block content %}
 
+		{% block standard-alerts %}
+		{% endblock standard-alerts %}
+
         {% if error_message %}
-        <div class="alert alert-danger">
+        <div class="alert alert-warning">
             <strong><i>{{ error_message }}</i></strong>
         </div>
         {% endif %}
-
-        <p>
-            <a class="btn btn-sm btn-default" href="/speciesobs/update">Update</a>
-            <a class="btn btn-sm btn-default" href="/speciesobs/load">Reload</a>
-            <a class="btn btn-sm btn-default" href="/speciesobs/clean_up">Clean up</a>
-        </p>
 
         <div class="panel panel-default">
             <div class="panel-heading">
@@ -24,6 +21,7 @@
             </div>
             <div class="panel-body">
                 <form class="sharkdata-form" method="post">
+                	{% csrf_token %}
                     {{ form.as_p }}
                     <p class="sharkdata-form-actions">
                         <button class="btn btn-sm btn-default" type="submit" name="confirm" value="get_data">View data</button>

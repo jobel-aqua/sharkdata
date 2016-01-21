@@ -1,4 +1,4 @@
-{% extends "sharkdata_base.html" %}
+{% extends "sharkdata_form_base.html" %}
 
 {% block title %}SHARKdata - Resources{% endblock %}
 
@@ -6,29 +6,18 @@
 
 {% block content %}
 
-        {% if error_message %}
-        <div class="alert alert-danger">
-            <strong><i>{{ error_message }}</i></strong>
-        </div>
-        {% endif %}
-
-        {% if form.errors %}
-        <div class="alert alert-danger">
-            <strong>Sorry, something went wrong.</strong> Please correct the error(s) below and try to submit the form again.
-        </div>
-        {% endif %}
-
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h2 class="panel-title">Import resource</h2>
             </div>
             <div class="panel-body">
                 <p>The file will be stored in the FTP archive and added to the database?</p>
-                <form class="sharkdata-form" enctype="multipart/form-data" method="post" action="import">
+                <form class="sharkdata-form" enctype="multipart/form-data" method="post" action="resources_import">
+                	{% csrf_token %}
                     {{ form.as_p }}
                     <p class="sharkdata-form-actions">
                         <button class="btn btn-primary" type="submit">Submit</button>
-                        <a class="btn btn-default" href="/resources">Cancel</a>
+                        <a class="btn btn-default" href="/sharkdataadmin">Cancel</a>
                     </p>
                 </form>
             </div>
