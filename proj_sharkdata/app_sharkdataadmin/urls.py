@@ -19,7 +19,7 @@ urlpatterns = patterns('app_sharkdataadmin.views',
         (r'^resources_load_all$', 'loadAllResources'),
 
         (r'^speciesobs_update$', 'updateSpeciesObs'),
-        (r'^speciesobs_load$', 'loadSpeciesObs'),
+#         (r'^speciesobs_load$', 'loadSpeciesObs'),
         (r'^speciesobs_cleanup', 'cleanUpSpeciesObs'),
         
         (r'^view_log/(?P<log_id>\d+)$', 'viewLog'),

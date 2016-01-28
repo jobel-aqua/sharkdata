@@ -445,45 +445,45 @@ def updateSpeciesObs(request):
     # Not a valid request method.
     return HttpResponseRedirect("/sharkdataadmin")
 
-def loadSpeciesObs(request):
-    """ Load species observations from file. """
-    error_message = None # initially.
-    #
-    if request.method == "GET":
-        #
-        form = forms.LoadSpeciesObsForm()
-        contextinstance = {'form': form,
-                           'error_message': error_message}
-        contextinstance.update(csrf(request))
-        return render_to_response("speciesobs_load.html", contextinstance)
-    elif request.method == "POST":
-        form = forms.LoadSpeciesObsForm(request.POST)
-        if form.is_valid():
-            #
-            user = request.POST['user']
-            password = request.POST['password']
-            if password != settings.APPS_VALID_USERS_AND_PASSWORDS_FOR_TEST.get(user, None):
-                error_message = u'Not a valid user or password. Please try again...'   
-            #
-            if error_message == None:
-                logrow_id = admin_models.createLogRow(command = u'Load species observations from backup file', status = u'RUNNING', user = user)
-                try:
-                    error_message = speciesobs_utils.SpeciesObsUtils().loadSpeciesObsInThread(logrow_id)
-                    # admin_models.changeLogRowStatus(logrow_id, status = u'FINISHED')
-                except:
-                    error_message = u"Can't load species observations from file."
-                    admin_models.changeLogRowStatus(logrow_id, status = u'FAILED')
-                    admin_models.addResultLog(logrow_id, result_log = error_message)
-            # OK.
-            if error_message == None:
-                return HttpResponseRedirect("/sharkdataadmin")
-        #
-        contextinstance = {'form': form,
-                           'error_message': error_message}
-        contextinstance.update(csrf(request))
-        return render_to_response("speciesobs_load.html", contextinstance)
-    # Not a valid request method.
-    return HttpResponseRedirect("/sharkdataadmin")
+# def loadSpeciesObs(request):
+#     """ Load species observations from file. """
+#     error_message = None # initially.
+#     #
+#     if request.method == "GET":
+#         #
+#         form = forms.LoadSpeciesObsForm()
+#         contextinstance = {'form': form,
+#                            'error_message': error_message}
+#         contextinstance.update(csrf(request))
+#         return render_to_response("speciesobs_load.html", contextinstance)
+#     elif request.method == "POST":
+#         form = forms.LoadSpeciesObsForm(request.POST)
+#         if form.is_valid():
+#             #
+#             user = request.POST['user']
+#             password = request.POST['password']
+#             if password != settings.APPS_VALID_USERS_AND_PASSWORDS_FOR_TEST.get(user, None):
+#                 error_message = u'Not a valid user or password. Please try again...'   
+#             #
+#             if error_message == None:
+#                 logrow_id = admin_models.createLogRow(command = u'Load species observations from backup file', status = u'RUNNING', user = user)
+#                 try:
+#                     error_message = speciesobs_utils.SpeciesObsUtils().loadSpeciesObsInThread(logrow_id)
+#                     # admin_models.changeLogRowStatus(logrow_id, status = u'FINISHED')
+#                 except:
+#                     error_message = u"Can't load species observations from file."
+#                     admin_models.changeLogRowStatus(logrow_id, status = u'FAILED')
+#                     admin_models.addResultLog(logrow_id, result_log = error_message)
+#             # OK.
+#             if error_message == None:
+#                 return HttpResponseRedirect("/sharkdataadmin")
+#         #
+#         contextinstance = {'form': form,
+#                            'error_message': error_message}
+#         contextinstance.update(csrf(request))
+#         return render_to_response("speciesobs_load.html", contextinstance)
+#     # Not a valid request method.
+#     return HttpResponseRedirect("/sharkdataadmin")
 
 def cleanUpSpeciesObs(request):
     """ Removes species observations with status='DELETED'. """

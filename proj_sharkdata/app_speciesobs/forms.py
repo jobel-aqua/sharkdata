@@ -90,22 +90,23 @@ class SpeciesObsFilterForm(forms.Form):
                                         required = False,
                                         widget=forms.Select())
 
-#         # taxon_genus
-#         taxon_genus = models.SpeciesObs.objects.values_list(u'taxon_genus', flat = True).distinct().order_by(u'taxon_genus')
-#         taxon_genus_choises = [('All', 'All')] + [(item, item) for item in taxon_genus]
-#         self.fields['genus'] = forms.ChoiceField(
-#                                         choices=taxon_genus_choises, 
-#                                         required = False,
-#                                         widget=forms.Select())
-
-        # taxon_species
-        taxon_species = models.SpeciesObs.objects.values_list(u'taxon_species', flat = True).distinct().order_by(u'taxon_species')
-        taxon_species_choises = [('All', 'All')] + [(item, item) for item in taxon_species]
-        self.fields['species'] = forms.ChoiceField(
+        # taxon_genus
+        taxon_genus = models.SpeciesObs.objects.values_list(u'taxon_genus', flat = True).distinct().order_by(u'taxon_genus')
+        taxon_genus_choises = [('All', 'All')] + [(item, item) for item in taxon_genus]
+        self.fields['genus'] = forms.ChoiceField(
                                         help_text=u'Including taxa of lower rank.',
-                                        choices=taxon_species_choises, 
+                                        choices=taxon_genus_choises, 
                                         required = False,
                                         widget=forms.Select())
+
+#         # taxon_species
+#         taxon_species = models.SpeciesObs.objects.values_list(u'taxon_species', flat = True).distinct().order_by(u'taxon_species')
+#         taxon_species_choises = [('All', 'All')] + [(item, item) for item in taxon_species]
+#         self.fields['species'] = forms.ChoiceField(
+#                                         help_text=u'Including taxa of lower rank.',
+#                                         choices=taxon_species_choises, 
+#                                         required = False,
+#                                         widget=forms.Select())
 
 
 def parse_filter_params(request_params, db_filter_dict, url_param_list):
@@ -161,18 +162,18 @@ def parse_filter_params(request_params, db_filter_dict, url_param_list):
         if order_filter not in [u'', u'All', u'-']:
             db_filter_dict['{0}__{1}'.format('taxon_order', 'iexact')] = urllib.unquote_plus(order_filter)
             url_param_list.append(u'order=' + urllib.quote_plus(order_filter))
-#     # taxon_genus
-#     if u'genus' in request_params:
-#         genus_filter = request_params['genus']
-#         if genus_filter not in [u'', u'All']:
-#             db_filter_dict['{0}__{1}'.format('taxon_genus', 'iexact')] = urllib.unquote_plus(genus_filter)
-#             url_param_list.append(u'genus=' + urllib.quote_plus(genus_filter))
-    # taxon_species
-    if u'species' in request_params:
-        species_filter = request_params['species']
-        if species_filter not in [u'', u'All', u'-']:
-            db_filter_dict['{0}__{1}'.format('taxon_species', 'iexact')] = urllib.unquote_plus(species_filter)
-            url_param_list.append(u'species=' + urllib.quote_plus(species_filter))
+    # taxon_genus
+    if u'genus' in request_params:
+        genus_filter = request_params['genus']
+        if genus_filter not in [u'', u'All']:
+            db_filter_dict['{0}__{1}'.format('taxon_genus', 'iexact')] = urllib.unquote_plus(genus_filter)
+            url_param_list.append(u'genus=' + urllib.quote_plus(genus_filter))
+#     # taxon_species
+#     if u'species' in request_params:
+#         species_filter = request_params['species']
+#         if species_filter not in [u'', u'All', u'-']:
+#             db_filter_dict['{0}__{1}'.format('taxon_species', 'iexact')] = urllib.unquote_plus(species_filter)
+#             url_param_list.append(u'species=' + urllib.quote_plus(species_filter))
     #
     if u'scientific_name' in request_params:
         scientific_name_filter = request_params['scientific_name']

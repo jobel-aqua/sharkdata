@@ -60,14 +60,17 @@ def listSpeciesObs(request):
                 class_param = request.POST['class']
             if u'order' in request.POST:
                 order_param = request.POST['order']
-            if u'species' in request.POST:
-                species_param = request.POST['species']
+            if u'genus' in request.POST:
+                genus_param = request.POST['genus']
+#             if u'species' in request.POST:
+#                 species_param = request.POST['species']
             if u'scientific_name' in request.POST:
                 scientific_name_param = request.POST['scientific_name']
             # Check for empty or '-'.
             if ((class_param not in [u'All', u'-', u'']) or 
                 (order_param not in [u'All', u'-', u'']) or 
-                (species_param not in [u'All', u'-', u'']) or 
+                (genus_param not in [u'All', u'-', u'']) or 
+#                 (species_param not in [u'All', u'-', u'']) or 
                 (scientific_name_param not in [u'All', u'-', u''])):
                 #
                 # Only show ACTIVE rows as a part of the HTML page.
@@ -78,7 +81,7 @@ def listSpeciesObs(request):
                     error_message = u'No data found. Please try again...'
 
             else:
-                error_message = u'At least one of Scientific name, Class, Order or Species must be selected. Please select one and try again...'
+                error_message = u'At least one of Scientific name, Class, Order or Genus must be selected. Please select one and try again...'
             #
             contextinstance = {'form': form,
                                'data_header' : data_header,

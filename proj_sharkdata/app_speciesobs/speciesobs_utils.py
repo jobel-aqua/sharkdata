@@ -141,26 +141,27 @@ class SpeciesObsUtils(object):
          
     def updateSpeciesObs(self, log_row_id):
         """ """
-        """ """
-#         # Remove all db rows. 
-#         speciesobs_models.SpeciesObs.objects.all().delete()
         #
         print(u'Species observations update. Started.')
         
         try:
-        
+            # Load resource file containing WoRMS info for taxa.
+            worms_info_object = misc_utils.SpeciesWormsInfo()
+            worms_info_object.loadSpeciesFromResource()
+            
+            # Mark all rows in db table before update starts.
             speciesobs_models.SpeciesObs.objects.all().update(last_update_date = u'0000-00-00')
     
             # Loop over all datasets.
-            valid_datatypes = [###u'Epibenthos', 
-                               u'Zoobenthos', 
-                               u'Phytoplankton', 
-                               u'Zooplankton', 
+            valid_datatypes = [
+                               u'Epibenthos', 
                                u'GreySeal', 
-                               u'HarborSeal', 
+                               u'HarbourSeal', 
+                               u'Phytoplankton', 
                                u'RingedSeal',
-                               # 
-                               u'Speciesobs', 
+                               u'Zoobenthos', 
+                               u'Zooplankton', 
+                               ###u'Speciesobs', 
                                ]
             #
             for dataset_queryset in datasets_models.Datasets.objects.all():
@@ -225,11 +226,30 @@ class SpeciesObsUtils(object):
                                 tmp_year = tmp_date[0:4]
                                 tmp_month = tmp_date[5:7]
                                 tmp_day = tmp_date[8:10] 
+                                
+                            scientificname = rowdict.get(u'scientific_name', u'-') if rowdict.get(u'scientific_name') else u'-'
+                            scientificauthority = rowdict.get(u'scientific_authority', u'-') if rowdict.get(u'scientific_authority') else u'-'
+                            taxon_worms_info = worms_info_object.getTaxonInfoDict(scientificname)
+                            if taxon_worms_info:
+                                taxonkingdom = taxon_worms_info.get(u'kingdom', u'-') if taxon_worms_info.get(u'kingdom') else u'-'
+                                taxonphylum = taxon_worms_info.get(u'phylum', u'-') if taxon_worms_info.get(u'phylum') else u'-'
+                                taxonclass = taxon_worms_info.get(u'class', u'-') if taxon_worms_info.get(u'class') else u'-'
+                                taxonorder = taxon_worms_info.get(u'order', u'-') if taxon_worms_info.get(u'order') else u'-'
+                                taxonfamily = taxon_worms_info.get(u'family', u'-') if taxon_worms_info.get(u'family') else u'-'
+                                taxongenus = taxon_worms_info.get(u'genus', u'-') if taxon_worms_info.get(u'genus') else u'-'
+                            else:
+                                taxonkingdom = u'-'
+                                taxonphylum = u'-'
+                                taxonclass = u'-'
+                                taxonorder = u'-'
+                                taxonfamily = u'-'
+                                taxongenus = u'-'
+
                               
                             speciesobs = speciesobs_models.SpeciesObs(
                                 data_type = rowdict.get(u'data_type', u''),
-                                scientific_name = rowdict.get(u'scientific_name', u'-') if rowdict.get(u'scientific_name') else u'-', ### scientific_name
-                                scientific_authority = rowdict.get(u'scientific_authority', u'-') if rowdict.get(u'scientific_authority') else u'-', ### scientific_name
+                                scientific_name = scientificname, 
+                                scientific_authority = scientificauthority, 
         #                         latitude_dd = rowdict.get(u'sample_latitude_dd', u'').replace(u',', u'.'),
         #                         longitude_dd = rowdict.get(u'sample_longitude_dd', u'').replace(u',', u'.'),
                                 latitude_dd = rowdict.get(u'latitude_dd', u'').replace(u',', u'.'),
@@ -242,14 +262,23 @@ class SpeciesObsUtils(object):
                                 sample_max_depth = rowdict.get(u'sample_max_depth', u''),
                                 sampler_type = rowdict.get(u'sampler_type', u''),
                                 dyntaxa_id = rowdict.get(u'dyntaxa_id', u'') if rowdict.get(u'dyntaxa_id') else u'-',
-                                taxon_kingdom = rowdict.get(u'taxon_kingdom', u'-') if rowdict.get(u'taxon_kingdom') else u'-',
-                                taxon_phylum = rowdict.get(u'taxon_phylum', u'-') if rowdict.get(u'taxon_phylum') else u'-',
-                                taxon_class = rowdict.get(u'taxon_class', u'-') if rowdict.get(u'taxon_class') else u'-',
-                                taxon_order = rowdict.get(u'taxon_order', u'-') if rowdict.get(u'taxon_order') else u'-',
-                                taxon_family = rowdict.get(u'taxon_family', u'-') if rowdict.get(u'taxon_family') else u'-',
-                                taxon_genus = rowdict.get(u'taxon_genus', u'-') if rowdict.get(u'taxon_genus') else u'-',
-                                taxon_species = rowdict.get(u'taxon_species', u'-') if rowdict.get(u'taxon_species') else u'-',
-         
+
+#                                 taxon_kingdom = rowdict.get(u'taxon_kingdom', u'-') if rowdict.get(u'taxon_kingdom') else u'-',
+#                                 taxon_phylum = rowdict.get(u'taxon_phylum', u'-') if rowdict.get(u'taxon_phylum') else u'-',
+#                                 taxon_class = rowdict.get(u'taxon_class', u'-') if rowdict.get(u'taxon_class') else u'-',
+#                                 taxon_order = rowdict.get(u'taxon_order', u'-') if rowdict.get(u'taxon_order') else u'-',
+#                                 taxon_family = rowdict.get(u'taxon_family', u'-') if rowdict.get(u'taxon_family') else u'-',
+#                                 taxon_genus = rowdict.get(u'taxon_genus', u'-') if rowdict.get(u'taxon_genus') else u'-',
+#                                 taxon_species = rowdict.get(u'taxon_species', u'-') if rowdict.get(u'taxon_species') else u'-',
+
+                                taxon_kingdom = taxonkingdom,
+                                taxon_phylum = taxonphylum,
+                                taxon_class = taxonclass,
+                                taxon_order = taxonorder,
+                                taxon_family = taxonfamily,
+                                taxon_genus = taxongenus,
+#                                 taxon_species = rowdict.get(u'species', u'-') if rowdict.get(u'species') else u'-',
+
                                 orderer = rowdict.get(u'orderer', u'') if rowdict.get(u'orderer') else u'-',
                                 reporting_institute = rowdict.get(u'reporting_institute', u'') if rowdict.get(u'reporting_institute') else u'-',
                                 sampling_laboratory = rowdict.get(u'sampling_laboratory', u'') if rowdict.get(u'sampling_laboratory') else u'-',
@@ -332,35 +361,35 @@ class SpeciesObsUtils(object):
         except ValueError:
             return False     
     
-    def loadSpeciesObsInThread(self, log_row_id):
-        """ """
-        
-        return u"This feature is not implemented yet..."
-        
-        
-        # Check if update thread is running.
-        if self._update_obs_thread:
-            if self._update_obs_thread.is_alive():
-                return u"Update is already running. Please try again later."
-        # Check if load thread is running.
-        if self._load_obs_thread:
-            if self._load_obs_thread.is_alive():
-                return u"Load is already running. Please try again later."              
-        # Check if clean up thread is running.
-        if self._cleanup_obs_thread:
-            if self._cleanup_obs_thread.is_alive():
-                return u"Clean up is already running. Please try again later."              
-        # Use a thread to relese the user. This task will take some time.
-        self._load_obs_thread = threading.Thread(target = self.loadSpeciesObs, args=(log_row_id,))
-        self._load_obs_thread.start()
-        return None # No error message.
-         
-    def loadSpeciesObs(self, log_row_id):
-        """ """
-        print(u'NOT IMPLRMENTED YET: SpeciesObsUtils.loadSpeciesObs()')
-        #
-        admin_models.changeLogRowStatus(log_row_id, status = u'FINISHED')
-        #
+#     def loadSpeciesObsInThread(self, log_row_id):
+#         """ """
+#         
+#         return u"This feature is not implemented yet..."
+#         
+#         
+#         # Check if update thread is running.
+#         if self._update_obs_thread:
+#             if self._update_obs_thread.is_alive():
+#                 return u"Update is already running. Please try again later."
+#         # Check if load thread is running.
+#         if self._load_obs_thread:
+#             if self._load_obs_thread.is_alive():
+#                 return u"Load is already running. Please try again later."              
+#         # Check if clean up thread is running.
+#         if self._cleanup_obs_thread:
+#             if self._cleanup_obs_thread.is_alive():
+#                 return u"Clean up is already running. Please try again later."              
+#         # Use a thread to relese the user. This task will take some time.
+#         self._load_obs_thread = threading.Thread(target = self.loadSpeciesObs, args=(log_row_id,))
+#         self._load_obs_thread.start()
+#         return None # No error message.
+#          
+#     def loadSpeciesObs(self, log_row_id):
+#         """ """
+#         print(u'NOT IMPLEMENTED YET: SpeciesObsUtils.loadSpeciesObs()')
+#         #
+#         admin_models.changeLogRowStatus(log_row_id, status = u'FINISHED')
+#         #
         
                   
     def cleanUpSpeciesObsInThread(self, log_row_id):
@@ -385,8 +414,11 @@ class SpeciesObsUtils(object):
        
     def cleanUpSpeciesObs(self, log_row_id):
         """ """
-        #
-        speciesobs_models.SpeciesObs.objects.filter(status=u'DELETED').delete()
+#         # Remove deleted rows when there is no more need for them from the consumer side (SLU). 
+#         speciesobs_models.SpeciesObs.objects.filter(status=u'DELETED').delete()
+
+        # Deletes all rows.
+        speciesobs_models.SpeciesObs.objects.all().delete()
         #
         admin_models.changeLogRowStatus(log_row_id, status = u'FINISHED')
         #
