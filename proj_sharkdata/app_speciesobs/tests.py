@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 #
-# Copyright (c) 2013-2014 SMHI, Swedish Meteorological and Hydrological Institute 
+# Copyright (c) 2013-2016 SMHI, Swedish Meteorological and Hydrological Institute 
 # License: MIT License (see LICENSE.txt or http://opensource.org/licenses/mit).
+from __future__ import unicode_literals
 
 """
 This file demonstrates writing tests using the unittest module. These will pass

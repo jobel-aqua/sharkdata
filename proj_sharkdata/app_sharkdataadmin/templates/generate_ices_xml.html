@@ -1,0 +1,28 @@
+{% extends "sharkdata_form_base.html" %}
+
+{% block title %}SHARKdata - Generate ICES-XML{% endblock %}
+
+{% block header %}Generate ICES-XML{% endblock %}
+
+{% block content %}
+
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h2 class="panel-title">Generate ICES-XML</h2>
+        </div>
+        <div class="panel-body">
+            <p>Select years and datatype to generate a new ICES-XML export file.
+            One file will be generated for each year and datatype.
+            Check "Approved (DC)" if the data is ready for harvesting.</p>
+            <form class="sharkdata-form" enctype="multipart/form-data" method="post" action="generate_ices_xml">
+            	{% csrf_token %}
+                {{ form.as_p }}
+                <p class="sharkdata-form-actions">
+                    <button class="btn btn-primary" type="submit">Yes</button>
+                    <a class="btn btn-default" href="/sharkdataadmin">Cancel</a>
+                </p>
+            </form>
+        </div>
+    </div>
+    
+{% endblock %}

@@ -1,23 +1,22 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 #
-# Copyright (c) 2013-2014 SMHI, Swedish Meteorological and Hydrological Institute 
+# Copyright (c) 2013-2016 SMHI, Swedish Meteorological and Hydrological Institute 
 # License: MIT License (see LICENSE.txt or http://opensource.org/licenses/mit).
-#
+from __future__ import unicode_literals
 
 import os
 import json
 from django.http import HttpResponse, HttpResponseRedirect, StreamingHttpResponse
-from django.core.context_processors import csrf
+from django.template.context_processors import csrf
 from django.shortcuts import render_to_response
 from django.conf import settings
-from django.core.servers.basehttp import FileWrapper
+from  wsgiref.util import FileWrapper
 import django.core.paginator as paginator
 import app_datasets.models as models
 import app_datasets.forms as forms
-import app_datasets.dataset_utils as dataset_utils
-import app_datasets.metadata_utils as metadata_utils
 import app_sharkdataadmin.models as admin_models
+import sharkdata_core
 
 def datasetDataText(request, dataset_name):
     """ Returns data in text format for a specific dataset. """
@@ -27,21 +26,21 @@ def datasetDataText(request, dataset_name):
     dataset = models.Datasets.objects.get(dataset_name = dataset_name)
     dataset_file_name = dataset.dataset_file_name
     #
-    data_as_text = dataset_utils.DatasetUtils().getDataAsText(dataset_name)
+    data_as_text = sharkdata_core.DatasetUtils().getDataAsText(dataset_name)
     #
     response = HttpResponse(content_type = 'text/plain; charset=cp1252')
     response['Content-Disposition'] = 'attachment; filename=' + dataset_file_name.replace('.zip', '.txt')
     if header_language:
         # Extract first row and translate.
-        rows = data_as_text.split(u'\r\n')
+        rows = data_as_text.split('\r\n')
         if len(rows) > 0:
-            headerrow = dataset_utils.DatasetUtils().translateDataHeaders(rows[0].split(u'\t'), 
+            headerrow = sharkdata_core.DatasetUtils().translateDataHeaders(rows[0].split('\t'), 
                                                                           language = header_language)
-            response.write((u'\t'.join(headerrow) + u'\r\n').encode(u'cp1252'))
+            response.write(('\t'.join(headerrow) + '\r\n').encode('cp1252'))
         if len(rows) > 0:
-            response.write(u'\r\n'.join(rows[1:]).encode(u'cp1252'))
+            response.write('\r\n'.join(rows[1:]).encode('cp1252'))
     else:
-        response.write(data_as_text.encode(u'cp1252'))
+        response.write(data_as_text.encode('cp1252'))
     #
     return response
 
@@ -53,32 +52,32 @@ def datasetDataJson(request, dataset_name):
     dataset = models.Datasets.objects.get(dataset_name = dataset_name)
     dataset_file_name = dataset.dataset_file_name
     #
-    data_as_text = dataset_utils.DatasetUtils().getDataAsText(dataset_name)
+    data_as_text = sharkdata_core.DatasetUtils().getDataAsText(dataset_name)
     #
     response = HttpResponse(content_type = 'application/json; charset=cp1252')
     response['Content-Disposition'] = 'attachment; filename=' + dataset_file_name.replace('.zip', '.json')  
-    response.write(u'{')
-    row_delimiter = u''
-#     for index, row in enumerate(data_as_text.split(u'\r\n')):
-    for index, row in enumerate(data_as_text.split(u'\n')):
-        rowitems = row.strip().split(u'\t')
+    response.write('{')
+    row_delimiter = ''
+#     for index, row in enumerate(data_as_text.split('\r\n')):
+    for index, row in enumerate(data_as_text.split('\n')):
+        rowitems = row.strip().split('\t')
         if index == 0:
-            response.write(u'"header": ["')
+            response.write('"header": ["')
             if header_language:
-                rowitems = dataset_utils.DatasetUtils().translateDataHeaders(rowitems, 
+                rowitems = sharkdata_core.DatasetUtils().translateDataHeaders(rowitems, 
                                                                              language = header_language)
             #
-            outrow = u'", "'.join(rowitems) + u'"], '
+            outrow = '", "'.join(rowitems) + '"], '
             #
-            response.write(outrow.encode(u'cp1252'))
-            response.write(u' "rows": [')
+            response.write(outrow.encode('cp1252'))
+            response.write(' "rows": [')
         else:
             if len(rowitems) > 1:
-                outrow = row_delimiter + u'["' + '", "'.join(rowitems) + u'"]'
-                response.write(outrow.encode(u'cp1252'))      
-                row_delimiter = u', '
-    response.write(u']')
-    response.write(u'}')
+                outrow = row_delimiter + '["' + '", "'.join(rowitems) + '"]'
+                response.write(outrow.encode('cp1252'))      
+                row_delimiter = ', '
+    response.write(']')
+    response.write('}')
     #
     return response
 
@@ -92,21 +91,21 @@ def datasetDataColumnsText(request, dataset_name):
     dataset = models.Datasets.objects.get(dataset_name = dataset_name)
     dataset_file_name = dataset.dataset_file_name
     #
-    data_as_text = dataset_utils.DatasetUtils().getDataColumnsAsText(dataset_name)
+    data_as_text = sharkdata_core.DatasetUtils().getDataColumnsAsText(dataset_name)
     #
     response = HttpResponse(content_type = 'text/plain; charset=cp1252')    
     response['Content-Disposition'] = 'attachment; filename=' + dataset_file_name.replace('.zip', '_COLUMNS.txt')  
     if header_language:
         # Extract first row and translate.
-        rows = data_as_text.split(u'\r\n')
+        rows = data_as_text.split('\r\n')
         if len(rows) > 0:
-            headerrow = dataset_utils.DatasetUtils().translateDataHeaders(rows[0].split(u'\t'), 
+            headerrow = sharkdata_core.DatasetUtils().translateDataHeaders(rows[0].split('\t'), 
                                                                           language = header_language)
-            response.write((u'\t'.join(headerrow) + u'\r\n').encode(u'cp1252'))
+            response.write(('\t'.join(headerrow) + '\r\n').encode('cp1252'))
         if len(rows) > 0:
-            response.write(u'\r\n'.join(rows[1:]).encode(u'cp1252'))
+            response.write('\r\n'.join(rows[1:]).encode('cp1252'))
     else:
-        response.write(data_as_text.encode(u'cp1252'))
+        response.write(data_as_text.encode('cp1252'))
     #
     return response
 
@@ -120,31 +119,31 @@ def datasetDataColumnsJson(request, dataset_name):
     dataset = models.Datasets.objects.get(dataset_name = dataset_name)
     dataset_file_name = dataset.dataset_file_name
     #
-    data_as_text = dataset_utils.DatasetUtils().getDataColumnsAsText(dataset_name)
+    data_as_text = sharkdata_core.DatasetUtils().getDataColumnsAsText(dataset_name)
     #
     response = HttpResponse(content_type = 'application/json; charset=cp1252')
     response['Content-Disposition'] = 'attachment; filename=' + dataset_file_name.replace('.zip', '_COLUMNS.json')   
-    response.write(u'{')
-    row_delimiter = u''
-#     for index, row in enumerate(data_as_text.split(u'\r\n')):
-    for index, row in enumerate(data_as_text.split(u'\n')):
-        rowitems = row.strip().split(u'\t')
+    response.write('{')
+    row_delimiter = ''
+#     for index, row in enumerate(data_as_text.split('\r\n')):
+    for index, row in enumerate(data_as_text.split('\n')):
+        rowitems = row.strip().split('\t')
         if index == 0:
-            response.write(u'"header": ["')
+            response.write('"header": ["')
             if header_language:
-                rowitems = dataset_utils.DatasetUtils().translateDataHeaders(rowitems, 
+                rowitems = sharkdata_core.DatasetUtils().translateDataHeaders(rowitems, 
                                                                              language = header_language)
             #
-            outrow = u'", "'.join(rowitems) + u'"], '
-            response.write(outrow.encode(u'cp1252'))
-            response.write(u' "rows": [')
+            outrow = '", "'.join(rowitems) + '"], '
+            response.write(outrow.encode('cp1252'))
+            response.write(' "rows": [')
         else:
             if len(rowitems) > 1:
-                outrow = row_delimiter + u'["' + '", "'.join(rowitems) + u'"]'
-                response.write(outrow.encode(u'cp1252'))      
-                row_delimiter = u', '
-    response.write(u']')
-    response.write(u'}')
+                outrow = row_delimiter + '["' + '", "'.join(rowitems) + '"]'
+                response.write(outrow.encode('cp1252'))      
+                row_delimiter = ', '
+    response.write(']')
+    response.write('}')
     #
     return response
 
@@ -153,7 +152,7 @@ def datasetMetadataText(request, dataset_name):
     dataset = models.Datasets.objects.get(dataset_name = dataset_name)
     dataset_file_name = dataset.dataset_file_name
     #
-    metadata_as_text = dataset_utils.DatasetUtils().getMetadataAsText(dataset_name)
+    metadata_as_text = sharkdata_core.DatasetUtils().getMetadataAsText(dataset_name)
     #
     response = HttpResponse(content_type = 'text/plain; charset=cp1252')    
     response['Content-Disposition'] = 'attachment; filename=' + dataset_file_name.replace('.zip', '_METADATA.txt')  
@@ -165,11 +164,11 @@ def datasetMetadataJson(request, dataset_name):
     dataset = models.Datasets.objects.get(dataset_name = dataset_name)
     dataset_file_name = dataset.dataset_file_name
     #
-    metadata_as_text = dataset_utils.DatasetUtils().getMetadataAsText(dataset_name)
+    metadata_as_text = sharkdata_core.DatasetUtils().getMetadataAsText(dataset_name)
     metadata_dict = {}
-    for row in metadata_as_text.split(u'\r\n'):
-        if u':' in row:
-            parts = row.split(u':', 1) # Split on first occurence.
+    for row in metadata_as_text.split('\r\n'):
+        if ':' in row:
+            parts = row.split(':', 1) # Split on first occurence.
             key = parts[0].strip()
             value = parts[1].strip()
             metadata_dict[key] = value
@@ -184,9 +183,9 @@ def datasetMetadataXml(request, dataset_name):
     dataset = models.Datasets.objects.get(dataset_name = dataset_name)
     dataset_file_name = dataset.dataset_file_name
     #
-    metadata_as_text = dataset_utils.DatasetUtils().getMetadataAsText(dataset_name)
+    metadata_as_text = sharkdata_core.DatasetUtils().getMetadataAsText(dataset_name)
     #
-    metadata_xml = metadata_utils.MetadataUtils().metadataToIso19139(metadata_as_text)
+    metadata_xml = sharkdata_core.MetadataUtils().metadataToIso19139(metadata_as_text)
     #
     response = HttpResponse(content_type = 'application/xml; charset=utf-8')    
     response['Content-Disposition'] = 'attachment; filename=' + dataset_file_name.replace('.zip', '_METADATA.xml')    
@@ -267,14 +266,14 @@ def listDatasets(request):
         pagination_size = int(request.GET.get('per_page', per_page_default))
     except:
         pagination_size = per_page_default    
-    selected_datatype = request.GET.get('datatype', u'All')
+    selected_datatype = request.GET.get('datatype', 'All')
     #
-    if (selected_datatype and (selected_datatype != u'All')):
-        datasets = models.Datasets.objects.all().filter(datatype = selected_datatype).order_by(u'dataset_name')
+    if (selected_datatype and (selected_datatype != 'All')):
+        datasets = models.Datasets.objects.all().filter(datatype = selected_datatype).order_by('dataset_name')
     else:
-        datasets = models.Datasets.objects.all().order_by(u'dataset_name')
+        datasets = models.Datasets.objects.all().order_by('dataset_name')
     #
-    datatypes = models.Datasets.objects.values_list(u'datatype').distinct().order_by(u'datatype')
+    datatypes = models.Datasets.objects.values_list('datatype').distinct().order_by('datatype')
     datatype_list = []
     for datatype in datatypes:
         try:
@@ -298,19 +297,19 @@ def listDatasets(request):
     next_page = pagination_page + 1 if pagination_page < pag.num_pages else pagination_page
 
     return render_to_response("list_datasets.html",
-                              {u'row_info' : row_info, 
-                               u'page' : pagination_page,
-                               u'per_page' : pagination_size,
-                               u'prev_page' :  prev_page,
-                               u'next_page' : next_page,
-                               u'pages' : pag.num_pages,
-                               u'datatypes' : datatype_list,
-                               u'selected_datatype' : selected_datatype,
-                               u'datasets' : datasets_page})
+                              {'row_info' : row_info, 
+                               'page' : pagination_page,
+                               'per_page' : pagination_size,
+                               'prev_page' :  prev_page,
+                               'next_page' : next_page,
+                               'pages' : pag.num_pages,
+                               'datatypes' : datatype_list,
+                               'selected_datatype' : selected_datatype,
+                               'datasets' : datasets_page})
     
 def listDatasetsJson(request):
     """ Generates a JSON file containing a list of datasets and their properties. """
-    data_header = dataset_utils.DatasetUtils().getDatasetListHeaders()
+    data_header = sharkdata_core.DatasetUtils().getDatasetListHeaders()
     datasets_json = []
     #
     data_rows = models.Datasets.objects.values_list(*data_header)
@@ -326,39 +325,39 @@ def listDatasetsJson(request):
 def tableDatasetsText(request):
     """ Generates a text file containing a list of datasets and their properties. """
     header_language = request.GET.get('header_language', None)
-    data_header = dataset_utils.DatasetUtils().getDatasetListHeaders()
-    translated_header = dataset_utils.DatasetUtils().translateDatasetListHeaders(data_header, 
+    data_header = sharkdata_core.DatasetUtils().getDatasetListHeaders()
+    translated_header = sharkdata_core.DatasetUtils().translateDatasetListHeaders(data_header, 
                                                                                  language = header_language)
     #
     data_rows = models.Datasets.objects.values_list(*data_header)
     #
     response = HttpResponse(content_type = 'text/plain; charset=cp1252')    
     response['Content-Disposition'] = 'attachment; filename=sharkdata_datasets.txt'    
-    response.write(u'\t'.join(translated_header) + u'\r\n') # Tab separated.
+    response.write('\t'.join(translated_header) + '\r\n') # Tab separated.
     for row in data_rows:
-        response.write(u'\t'.join(map(unicode, row)) + u'\r\n') # Tab separated.        
+        response.write('\t'.join(map(unicode, row)) + '\r\n') # Tab separated.        
     return response
 
 def tableDatasetsJson(request):
     """ Generates a text file containing a list of datasets and their properties. 
         Organised as header and rows.
     """
-    data_header = dataset_utils.DatasetUtils().getDatasetListHeaders()
+    data_header = sharkdata_core.DatasetUtils().getDatasetListHeaders()
     #
     data_rows = models.Datasets.objects.values_list(*data_header)
     #
     response = HttpResponse(content_type = 'application/json; charset=cp1252')
     response['Content-Disposition'] = 'attachment; filename=sharkdata_datasets.json'    
-    response.write(u'{')
-    response.write(u'"header": ["')
-    response.write(u'", "'.join(data_header) + u'"], ') # Tab separated.
-    response.write(u'"rows": [')
-    row_delimiter = u''
+    response.write('{')
+    response.write('"header": ["')
+    response.write('", "'.join(data_header) + '"], ') # Tab separated.
+    response.write('"rows": [')
+    row_delimiter = ''
     for row in data_rows:
-        response.write(row_delimiter + u'["' + '", "'.join(map(unicode, row)) + u'"]')      
-        row_delimiter = u', '
-    response.write(u']')
-    response.write(u'}')
+        response.write(row_delimiter + '["' + '", "'.join(map(unicode, row)) + '"]')      
+        row_delimiter = ', '
+    response.write(']')
+    response.write('}')
     #
     return response
 
@@ -382,28 +381,28 @@ def deleteDataset(request, dataset_id):
             user = request.POST['user']
             password = request.POST['password']
             if password != settings.APPS_VALID_USERS_AND_PASSWORDS_FOR_TEST.get(user, None):
-                error_message = u'Not a valid user or password. Please try again...'   
+                error_message = 'Not a valid user or password. Please try again...'   
             #
             if error_message == None:
-                if ('delete_ftp' in request.POST) and (request.POST['delete_ftp'] == u'on'):
+                if ('delete_ftp' in request.POST) and (request.POST['delete_ftp'] == 'on'):
                     # Delete the marked dataset version. Earlier versions vill be used, if there are any. 
-                    logrow_id = admin_models.createLogRow(command = u'Delete dataset (FTP)', status = u'RUNNING', user = user)
+                    logrow_id = admin_models.createLogRow(command = 'Delete dataset (FTP)', status = 'RUNNING', user = user)
                     try:
-                        error_message = dataset_utils.DatasetUtils().deleteFileFromFtp(dataset.dataset_file_name)
-                        error_message = dataset_utils.DatasetUtils().writeLatestDatasetsInfoToDb(user)
-                        admin_models.changeLogRowStatus(logrow_id, status = u'FINISHED')
+                        error_message = sharkdata_core.DatasetUtils().deleteFileFromFtp(dataset.dataset_file_name)
+                        error_message = sharkdata_core.DatasetUtils().writeLatestDatasetsInfoToDb(user)
+                        admin_models.changeLogRowStatus(logrow_id, status = 'FINISHED')
                     except:
                         error_message = u"Can't delete dataset from the ftp."
-                        admin_models.changeLogRowStatus(logrow_id, status = u'FAILED')
+                        admin_models.changeLogRowStatus(logrow_id, status = 'FAILED')
                         admin_models.addResultLog(logrow_id, result_log = error_message)
                 else:
-                    logrow_id = admin_models.createLogRow(command = u'Delete dataset (DB)', status = u'RUNNING', user = user)
+                    logrow_id = admin_models.createLogRow(command = 'Delete dataset (DB)', status = 'RUNNING', user = user)
                     try:
                         dataset = models.Datasets.objects.get(id=dataset_id)
                         dataset.delete()
                     except:
                         error_message = u"Can't delete dataset from the database."
-                        admin_models.changeLogRowStatus(logrow_id, status = u'FAILED')
+                        admin_models.changeLogRowStatus(logrow_id, status = 'FAILED')
                         admin_models.addResultLog(logrow_id, result_log = error_message)
             # OK.
             if error_message == None:

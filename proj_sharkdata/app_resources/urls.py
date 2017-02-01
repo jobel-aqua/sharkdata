@@ -1,24 +1,23 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 #
-# Copyright (c) 2013-2014 SMHI, Swedish Meteorological and Hydrological Institute 
+# Copyright (c) 2013-2016 SMHI, Swedish Meteorological and Hydrological Institute 
 # License: MIT License (see LICENSE.txt or http://opensource.org/licenses/mit).
+from __future__ import unicode_literals
 
-from django.conf.urls import patterns, include, url
+from django.conf.urls import url
+import app_resources.views
 
-urlpatterns = patterns('app_resources.views',
-        (r'^$', 'listResources'),
-        (r'^list$', 'listResources'),
-        (r'^list.json$', 'listResourcesJson'),
-        #
-        (r'^table$', 'tableResources'),
-        (r'^table.txt', 'tableResourcesText'),
-        (r'^table.json', 'tableResourcesJson'),
-        #
-#         (r'^import$', 'importResource'),
-#         (r'^delete_all$', 'deleteResources'),
-#         (r'^load_all$', 'loadAllResources'),
-        (r'^delete/(?P<resource_id>\d+)$', 'deleteResource'),
-        #
-        (r'^(?P<resource_name>\S+)/content.txt', 'resourceContentText'),
-    )
+urlpatterns = [
+    url(r'^$', app_resources.views.listResources),
+    url(r'^list/', app_resources.views.listResources),
+    url(r'^list.json/', app_resources.views.listResourcesJson),
+    #
+    url(r'^table/', app_resources.views.tableResourcesText),
+    url(r'^table.txt/', app_resources.views.tableResourcesText),
+    url(r'^table.json/', app_resources.views.tableResourcesJson),
+    #
+    url(r'^delete/(?P<resource_id>\d+)', app_resources.views.deleteResource),
+    #
+    url(r'^(?P<resource_name>\S+)/content.txt', app_resources.views.resourceContentText),
+]
