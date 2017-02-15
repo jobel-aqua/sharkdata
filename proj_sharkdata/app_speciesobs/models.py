@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 #
-# Copyright (c) 2013-2014 SMHI, Swedish Meteorological and Hydrological Institute 
+# Copyright (c) 2013-2016 SMHI, Swedish Meteorological and Hydrological Institute 
 # License: MIT License (see LICENSE.txt or http://opensource.org/licenses/mit).
+from __future__ import unicode_literals
 
-#from django.db import models
-from django.contrib.gis.db import models # For GeoDjango.
+from django.db import models
+### from django.contrib.gis.db import models # For GeoDjango.
 import hashlib
 
 class SpeciesObs(models.Model):
@@ -45,9 +46,10 @@ class SpeciesObs(models.Model):
     # Datset info.
     dataset_name  = models.CharField(max_length=255, db_index=True)
     dataset_file_name  = models.CharField(max_length=255)
-    # GeoDjango:Override the default manager with a GeoManager instance.
-    geometry = models.PointField(srid=4326, null=True, blank=True)
-    objects = models.GeoManager()    
+    #
+###    # GeoDjango:Override the default manager with a GeoManager instance.
+###     geometry = models.PointField(srid=4326, null=True, blank=True)
+###     objects = models.GeoManager()    
 
     def calculateDarwinCoreObservationIdAsMD5(self):
         """ Calculates DarwinCore Observation Id. It is based on fields that makes the observation unique
@@ -56,28 +58,28 @@ class SpeciesObs(models.Model):
             when the same data is imported multiple times by producing the same id. It will also work if
             the observation is resubmitted in another dataset or with other corrections made to aditional data.  
         """
-        tmp_id = self.data_type + u'+' + \
-                 self.sampling_date + u'+' + \
-                 self.latitude_dd + u'+' + \
-                 self.longitude_dd + u'+' + \
-                 self.scientific_name + u'+' + \
-                 self.sample_min_depth + u'+' + \
-                 self.sample_max_depth + u'+' + \
+        tmp_id = self.data_type + '+' + \
+                 self.sampling_date + '+' + \
+                 self.latitude_dd + '+' + \
+                 self.longitude_dd + '+' + \
+                 self.scientific_name + '+' + \
+                 self.sample_min_depth + '+' + \
+                 self.sample_max_depth + '+' + \
                  self.sampler_type
         # Generates MD5 string of 32 hex digits.
-        md5_id = u'MD5 not calculated'
+        md5_id = 'MD5 not calculated'
         try:
             md5_id = hashlib.md5(tmp_id).hexdigest()
         except:
-            md5_id = u'ERROR in MD5 generation.'
+            md5_id = 'ERROR in MD5 generation.'
         #
         return md5_id
 
     def __unicode__(self):
-        return self.data_type + u' ' + \
-               self.sampling_date + u' ' + \
-               self.latitude_dd + u' ' + \
-               self.longitude_dd + u' ' + \
+        return self.data_type + ' ' + \
+               self.sampling_date + ' ' + \
+               self.latitude_dd + ' ' + \
+               self.longitude_dd + ' ' + \
                self.scientific_name
 
     class Meta:
@@ -100,7 +102,7 @@ class SpeciesObs(models.Model):
 #     deleted_date = models.CharField(max_length=10)
 # 
 #     def __unicode__(self):
-#         return self.generated_occurrence_id + u' ' + \
-#                self.state + u' ' + \
-#                self.added_date + u' ' + \
+#         return self.generated_occurrence_id + ' ' + \
+#                self.state + ' ' + \
+#                self.added_date + ' ' + \
 #                self.deleted_date

@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 #
-# Copyright (c) 2013-2014 SMHI, Swedish Meteorological and Hydrological Institute 
+# Copyright (c) 2013-2016 SMHI, Swedish Meteorological and Hydrological Institute 
 # License: MIT License (see LICENSE.txt or http://opensource.org/licenses/mit).
+from __future__ import unicode_literals
 
 from django.db import models
 
@@ -19,23 +20,23 @@ class CommandLog(models.Model):
     debug_log = models.TextField()
 
     def __unicode__(self):
-        return unicode(self.started_datetime) + u' ' + \
-               self.command_name + u' ' + \
+        return unicode(self.started_datetime) + ' ' + \
+               self.command_name + ' ' + \
                self.status
 
 
-def createLogRow(command = u'NOT-DEFINED', 
-                 status = u'RUNNING', 
-                 user = u''):
+def createLogRow(command = 'NOT-DEFINED', 
+                 status = 'RUNNING', 
+                 user = ''):
     """ """
     logrow = CommandLog(command_name = command,
                   status = status,
                   executed_by = user,
-                  result_log = u'',
-                  debug_log = u''
+                  result_log = '',
+                  debug_log = ''
                   )
     logrow.save()
-    addResultLog(logrow.id, 'Command: ' + command + u'\r\n\r\n')
+    addResultLog(logrow.id, 'Command: ' + command + '\r\n\r\n')
     return logrow.id  
 
 def changeLogRowStatus(row_id, status):
@@ -45,7 +46,7 @@ def changeLogRowStatus(row_id, status):
         logrow = CommandLog.objects.get(id = row_id)
         logrow.status = status
         logrow.save()
-        addResultLog(logrow.id, u'\n- New status: ' + status + u'\r\n\r\n')
+        addResultLog(logrow.id, '\n- New status: ' + status + '\r\n\r\n')
     except:
         return
 
@@ -54,8 +55,8 @@ def addResultLog(row_id, result_log):
     logrow = None
     try: 
         logrow = CommandLog.objects.get(id = row_id)
-        logrow.result_log += result_log + u'\n'
-        logrow.debug_log += result_log + u'\n' # Also add to debug log.
+        logrow.result_log += result_log + '\n'
+        logrow.debug_log += result_log + '\n' # Also add to debug log.
         logrow.save()
     except:
         return
@@ -65,7 +66,7 @@ def addDebugLog(row_id, debug_log):
     logrow = None
     try: 
         logrow = CommandLog.objects.get(id = row_id)
-        logrow.debug_log += debug_log + u'\n'
+        logrow.debug_log += debug_log + '\n'
         logrow.save()
     except:
         return

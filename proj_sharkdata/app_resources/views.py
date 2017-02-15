@@ -1,18 +1,19 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 #
-# Copyright (c) 2013-2014 SMHI, Swedish Meteorological and Hydrological Institute 
+# Copyright (c) 2013-2016 SMHI, Swedish Meteorological and Hydrological Institute 
 # License: MIT License (see LICENSE.txt or http://opensource.org/licenses/mit).
+from __future__ import unicode_literals
 
 import json
 from django.http import HttpResponse, HttpResponseRedirect
-from django.core.context_processors import csrf
+from django.template.context_processors import csrf
 from django.shortcuts import render_to_response
 from django.conf import settings
 import app_resources.models as models
 import app_resources.forms as forms
-import app_resources.resources_utils as resources_utils
 import app_sharkdataadmin.models as admin_models
+import sharkdata_core
 
 def resourceContentText(request, resource_name):
     """ Returns data in text format for a specific resource. """
@@ -22,19 +23,19 @@ def resourceContentText(request, resource_name):
     #
     response = HttpResponse(content_type = 'text/plain; charset=cp1252')    
     response['Content-Disposition'] = 'attachment; filename=' + resource_file_name   
-    response.write(data_as_text.encode(u'cp1252'))
+    response.write(data_as_text.encode('cp1252'))
     return response
 
 def listResources(request):
     """ Generates an HTML page listing all resources. """
-    resources = models.Resources.objects.all().order_by(u'resource_name')
+    resources = models.Resources.objects.all().order_by('resource_name')
     #
     return render_to_response("list_resources.html",
                               {'resources' : resources})
 
 def listResourcesJson(request):
     """ Generates a JSON file containing a list of resources and their properties. """
-    data_header = resources_utils.ResourcesUtils().getHeaders()
+    data_header = sharkdata_core.ResourcesUtils().getHeaders()
     resources_json = []
     #
     data_rows = models.Resources.objects.values_list(*data_header)
@@ -49,38 +50,38 @@ def listResourcesJson(request):
     
 def tableResourcesText(request):
     """ Generates a text file containing a list of resources and their properties. """
-    data_header = resources_utils.ResourcesUtils().getHeaders()
-    translated_header = resources_utils.ResourcesUtils().translateHeaders(data_header)
+    data_header = sharkdata_core.ResourcesUtils().getHeaders()
+    translated_header = sharkdata_core.ResourcesUtils().translateHeaders(data_header)
     #
     data_rows = models.Resources.objects.values_list(*data_header)
     #
     response = HttpResponse(content_type = 'text/plain; charset=cp1252')    
     response['Content-Disposition'] = 'attachment; filename=sharkdata_resources.txt'    
-    response.write(u'\t'.join(translated_header) + u'\r\n') # Tab separated.
+    response.write('\t'.join(translated_header) + '\r\n') # Tab separated.
     for row in data_rows:
-        response.write(u'\t'.join(row) + u'\r\n') # Tab separated.        
+        response.write('\t'.join(row) + '\r\n') # Tab separated.        
     return response
 
 def tableResourcesJson(request):
     """ Generates a text file containing a list of resources and their properties. 
         Organised as header and rows.
     """
-    data_header = resources_utils.ResourcesUtils().getHeaders()
+    data_header = sharkdata_core.ResourcesUtils().getHeaders()
     #
     data_rows = models.Resources.objects.values_list(*data_header)
     #
     response = HttpResponse(content_type = 'application/json; charset=cp1252')
     response['Content-Disposition'] = 'attachment; filename=sharkdata_resources.json'    
-    response.write(u'{')
-    response.write(u'"header": ["')
-    response.write(u'", "'.join(data_header) + u'"], ') # Tab separated.
+    response.write('{')
+    response.write('"header": ["')
+    response.write('", "'.join(data_header) + '"], ') # Tab separated.
     response.write(u"'rows': [")
-    row_delimiter = u''
+    row_delimiter = ''
     for row in data_rows:
-        response.write(row_delimiter + u'["' + '", "'.join(row) + u'"]')      
-        row_delimiter = u', '
-    response.write(u']')
-    response.write(u'}')
+        response.write(row_delimiter + '["' + '", "'.join(row) + '"]')      
+        row_delimiter = ', '
+    response.write(']')
+    response.write('}')
     #
     return response
 
@@ -97,7 +98,7 @@ def deleteResource(request, resource_id):
         return render_to_response("delete_resource.html",  contextinstance)
     elif request.method == "POST":
         # Reloads db-stored data.
-        resources_utils.ResourcesUtils().clear()
+        sharkdata_core.ResourcesUtils().clear()
         #
         error_message = None # initially.
         #
@@ -106,28 +107,28 @@ def deleteResource(request, resource_id):
             #
             user = request.POST['user']
             if user not in settings.APPS_VALID_USERS_AND_PASSWORDS_FOR_TEST.keys():
-                error_message = u'Not a valid user. Please try again...'   
+                error_message = 'Not a valid user. Please try again...'   
             #
             if error_message == None:
-                if ('delete_ftp' in request.POST) and (request.POST['delete_ftp'] == u'on'):
-                    logrow_id = admin_models.createLogRow(command = u'Delete resource (FTP)', status = u'RUNNING', user = user)
+                if ('delete_ftp' in request.POST) and (request.POST['delete_ftp'] == 'on'):
+                    logrow_id = admin_models.createLogRow(command = 'Delete resource (FTP)', status = 'RUNNING', user = user)
                     try:
-                        resources_utils.ResourcesUtils().deleteFileFromFtp(resource.resource_file_name)
-                        admin_models.changeLogRowStatus(logrow_id, status = u'FINISHED')
+                        sharkdata_core.ResourcesUtils().deleteFileFromFtp(resource.resource_file_name)
+                        admin_models.changeLogRowStatus(logrow_id, status = 'FINISHED')
                     except:
                         error_message = u"Can't delete resources from the database."
-                        admin_models.changeLogRowStatus(logrow_id, status = u'FAILED')
+                        admin_models.changeLogRowStatus(logrow_id, status = 'FAILED')
                         admin_models.addResultLog(logrow_id, result_log = error_message)
             #
             if error_message == None:
-                logrow_id = admin_models.createLogRow(command = u'Delete resource (DB)', status = u'RUNNING', user = user)
+                logrow_id = admin_models.createLogRow(command = 'Delete resource (DB)', status = 'RUNNING', user = user)
                 try:
                     resource = models.Resources.objects.get(id=resource_id)
                     resource.delete()
-                    admin_models.changeLogRowStatus(logrow_id, status = u'FINISHED')
+                    admin_models.changeLogRowStatus(logrow_id, status = 'FINISHED')
                 except:
                     error_message = u"Can't delete resource from the database."
-                    admin_models.changeLogRowStatus(logrow_id, status = u'FAILED')
+                    admin_models.changeLogRowStatus(logrow_id, status = 'FAILED')
                     admin_models.addResultLog(logrow_id, result_log = error_message)
             # OK.
             if error_message == None:

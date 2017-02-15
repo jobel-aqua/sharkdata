@@ -1,0 +1,26 @@
+{% extends "sharkdata_form_base.html" %}
+
+{% block title %}SHARKdata - Delete export file{% endblock %}
+
+{% block header %}Delete export file{% endblock %}
+
+{% block content %}
+ 
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h2 class="panel-title">Delete export file</h2>
+        </div>
+        <div class="panel-body">
+            <p>Are you sure you want to delete {{ dataset.dataset_file_name }} from the database?</p>
+            <form class="sharkdata-form" enctype="multipart/form-data" method="post" action="{{ dataset.id }}">
+            	{% csrf_token %}
+                {{ form.as_p }}
+                <p class="sharkdata-form-actions">
+                    <button class="btn btn-primary" type="submit">Yes</button>
+                    <a class="btn btn-default" href="/exportformats">Cancel</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+{% endblock %}

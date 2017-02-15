@@ -2,7 +2,7 @@
 
 {% block title %}SHARKdata - Reload all datasets{% endblock %}
 
-{% block header %}Datasets{% endblock %}
+{% block header %}Reload all datasets{% endblock %}
 
 {% block content %}
 
@@ -11,7 +11,9 @@
             <h2 class="panel-title">Reload all datasets</h2>
         </div>
         <div class="panel-body">
-            <p>Are you sure you want to reload all datasets from the FTP archive to the database?</p>
+            <p>Are you sure you want to reload all datasets from the FTP archive to the database?<br>
+               Select "Delete old versions" to remove older versions from the FTP-area.
+            </p>
             <form class="sharkdata-form" enctype="multipart/form-data" method="post" action="datasets_load_all">
             	{% csrf_token %}
                 {{ form.as_p }}

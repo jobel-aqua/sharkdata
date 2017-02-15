@@ -22,8 +22,8 @@
                 <span>Datatype filter: </span>
                 <select id= "datatype_select" onchange="reload_page(this)">
                     <option value="All">All</option>
+
                     {% for datatype in datatypes %}
-                    
                         {% if datatype == selected_datatype %}
                             <option value={{ datatype }} selected="selected">{{ datatype }}</option>
                         {% else %}
@@ -57,12 +57,12 @@
                     <thead>
                         <tr>
                             <th>Datatype</th>
-                            <th>Dataset name</th>
+                            <th>Dataset&nbsp;name</th>
                             <th>Metadata</th>
                             <th>Data</th>
                             <th>Packages</th>
 <!--                             <th>Version</th> -->
-                            <th>Dataset file name</th>
+                            <th>Dataset&nbsp;file&nbsp;name</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -129,10 +129,7 @@
                               </div>
                             </td>  
                             
-                            
-<!--                            <td>{{ dataset.version }}</td> -->
                             <td>{{ dataset.dataset_file_name }}</td>
-<!--                            <td><a class="btn btn-primary btn-xs" href="/datasets/delete/{{ dataset.id }}">Delete</a></td> -->
                             <td><a class="btn btn-primary btn-xs" href="/datasets/delete/{{ dataset.id }}"><span class="glyphicon glyphicon-trash"></span></a></td>
                         </tr>
                     {% endfor %}

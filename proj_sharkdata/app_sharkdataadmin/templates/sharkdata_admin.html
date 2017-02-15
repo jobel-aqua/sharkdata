@@ -33,6 +33,14 @@
         <p>
             <a class="btn btn-sm btn-default" href="/sharkdataadmin/generate_archives">Generate archive files...</a>
         </p>
+        <p>
+            ICES-XML format (for test only). Generated files are available in the 'Export formats' module.    
+        </p>
+        <p>
+            <a class="btn btn-sm btn-default" href="/sharkdataadmin/exportfiles_delete_all">Delete all ICES-XML files...</a>
+            <a class="btn btn-sm btn-default" href="/sharkdataadmin/generate_ices_xml">Generate ICES-XML file...</a>
+            <a class="btn btn-sm btn-default" href="/sharkdataadmin/validate_ices_xml">Validate ICES-XML file...</a>
+        </p>
         </div>
     </div>
 
@@ -86,7 +94,7 @@
                         <th>Status</th>
                         <th>Started</th>
                         <th>Finished</th>
-                        <th>Result log</th>
+                        <th>Result&nbsp;log</th>
 <!--                        <th>Mail to admin(s):</th> -->
                     </tr>
                 </thead>
@@ -107,6 +115,5 @@
         </div>
 
     </div>
-
 
 {% endblock content %}

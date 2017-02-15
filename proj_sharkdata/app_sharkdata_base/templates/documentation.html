@@ -1,8 +1,8 @@
 {% extends "sharkdata_doc_base.html" %}
 
-{% block title %} SHARKdata - Documentation {% endblock%}
+{% block title %}SHARKdata - Documentation{% endblock%}
 
-{% block header %} Documentation {% endblock%}
+{% block header %}Documentation{% endblock%}
 
 {% block doc-content %}
 
@@ -46,6 +46,12 @@
 	header translations, screening of data, taxonomic information, etc.
 	</p>
 	
+	<p>
+	SHARKdata is currently under development and only a limited number of datasets 
+	and response formats are available for test.  
+	</p>
+	
+
 	<h3>Example URLs:</h3>
 	
 	<p>
@@ -88,11 +94,11 @@
 	    <a href="/speciesobs/table.txt/?species={{ first_species_name }}">http://sharkdata.se/speciesobs/table.txt/?species={{ first_species_name }}</a></li>
 	    <li>View observations for the scientific name {{ first_species_name }} as a JSON object with header and rows: <br>
 	    <a href="/speciesobs/table.json/?species={{ first_species_name }}">http://sharkdata.se/speciesobs/table.json/?species={{ first_species_name }}</a></li>
-	    <li>Get a KML-file (this type of files can be opened in standard GIS programs): <br>
-	    <a href="/speciesobs/positions.kml/?species={{ first_species_name }}">http://sharkdata.se/speciesobs/positions.kml/?species={{ first_species_name }}</a></li>
-	    <a href="/speciesobs/year_info.kml/?species={{ first_species_name }}">http://sharkdata.se/speciesobs/year_info.kml/?species={{ first_species_name }}</a></li>
-	    <li>View observations for the scientific name {{ first_species_name }} on a simple map: <br>
-	    <a href="/speciesobs/map/?species={{ first_species_name }}">http://sharkdata.se/speciesobs/map/?species={{ first_species_name }}</a></li>
+<!-- 	    <li>Get a KML-file (this type of files can be opened in standard GIS programs): <br> -->
+<!-- 	    <a href="/speciesobs/positions.kml/?species={{ first_species_name }}">http://sharkdata.se/speciesobs/positions.kml/?species={{ first_species_name }}</a></li> -->
+<!-- 	    <a href="/speciesobs/year_info.kml/?species={{ first_species_name }}">http://sharkdata.se/speciesobs/year_info.kml/?species={{ first_species_name }}</a></li> -->
+<!-- 	    <li>View observations for the scientific name {{ first_species_name }} on a simple map: <br> -->
+<!-- 	    <a href="/speciesobs/map/?species={{ first_species_name }}">http://sharkdata.se/speciesobs/map/?species={{ first_species_name }}</a></li> -->
 	</ul>
 	There are some more intractive URL examples in the Species observations module.
 	

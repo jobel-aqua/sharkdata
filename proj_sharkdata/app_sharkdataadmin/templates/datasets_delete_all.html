@@ -2,7 +2,7 @@
 
 {% block title %}SHARKdata - Delete all datasets{% endblock %}
 
-{% block header %}Datasets{% endblock %}
+{% block header %}Delete all datasets{% endblock %}
 
 {% block content %}
 
@@ -13,7 +13,6 @@
         <div class="panel-body">
             <p>Are you sure you want to delete all datasets from the database?<br>
                Select "Remove from FTP" if you also want to delete all datasets in the FTP-area.
-            
             </p>
             <form class="sharkdata-form" enctype="multipart/form-data" method="post" action="datasets_delete_all">
             	{% csrf_token %}

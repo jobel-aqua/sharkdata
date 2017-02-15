@@ -1,0 +1,27 @@
+{% extends "sharkdata_form_base.html" %}
+
+{% block title %}SHARKdata - Validate ICES-XML{% endblock %}
+
+{% block header %}Validate ICES-XML{% endblock %}
+
+{% block content %}
+
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h2 class="panel-title">Validate ICES-XML</h2>
+        </div>
+        <div class="panel-body">
+            <p>Validate ICES-XML by calling the DATSU server at ICES.
+            Files with status "Not checked" or "Test" will be validated. </p>
+            <form class="sharkdata-form" enctype="multipart/form-data" method="post" action="validate_ices_xml">
+            	{% csrf_token %}
+                {{ form.as_p }}
+                <p class="sharkdata-form-actions">
+                    <button class="btn btn-primary" type="submit">Yes</button>
+                    <a class="btn btn-default" href="/sharkdataadmin">Cancel</a>
+                </p>
+            </form>
+        </div>
+    </div>
+    
+{% endblock %}
